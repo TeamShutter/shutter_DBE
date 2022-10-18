@@ -11,7 +11,8 @@ class SignUpSerializer(serializers.ModelSerializer):
         model = User
         fields = ['username', 'password']
     
-    def validate(self, attrs):
+    def validate_name(self, attrs):
+        # .get(키값, 키가 없을때 배출되는 결과값)
         username = attrs.get('username', '')
 				# isalnum(): is alphabet number
         if not username.isalnum():
