@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import AssignedTime, Photographer, Studio, Product, OpenedTime
+from .models import AssignedTime, Photographer, Place, Studio, Product, OpenedTime
 
 
 class StudioSerializer(serializers.ModelSerializer):
@@ -13,6 +13,12 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ('studio', 'name', 'description', 'price', 'duration', 'created_at', 'updated_at')
+
+class PlaceSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Place
+        fileds = ('studio', 'name', 'description', 'address')
     
 
 class OpenedTimeSerializer(serializers.ModelSerializer):

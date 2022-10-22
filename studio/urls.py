@@ -1,13 +1,15 @@
 from django.urls import path
 
 from reservation.views import AllReservationView, ReservationView
-from .views import AssignedTimeView, AllAssignedTimeView, AllPhotographerView, PhotographerView, AllProductView, ProductView, AllOpenedTimeView, OpenedTimeView
+from .views import AllPlaceView, AssignedTimeView, AllAssignedTimeView, AllPhotographerView, PhotographerView, AllProductView, PlaceView, ProductView, AllOpenedTimeView, OpenedTimeView
 # from rest_framework.urlpatterns import format_suffix_patterns
 
 app_name = 'studio'
 urlpatterns = [
     path('<int:studio_id>/product/', AllProductView.as_view(), name='product_list'),
     path('<int:studio_id>/product/<int:id>/', ProductView.as_view(), name='product'),
+    path('<int:studio_id>/place/', AllPlaceView.as_view(), name='place_list'),
+    path('<int:studio_id>/place/<int:id>/', PlaceView.as_view(), name='place'),
     path('openedtime/', AllOpenedTimeView.as_view(), name='opened_time_list'),
     path('openedtime/<int:id>/', OpenedTimeView.as_view(), name='opened_time'),
     path('<int:studio_id>/photographer/', AllPhotographerView.as_view(), name='photographer_list'),

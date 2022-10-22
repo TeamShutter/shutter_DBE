@@ -8,11 +8,20 @@ class Studio(models.Model):
     name = models.CharField(max_length = 50, default='studio_name')
     description = models.TextField(default='description')
     phone = models.CharField(max_length=50, default='010-0000-0000')
+
+    def __str__(self):
+        return(self.name)
+
+
+class Place(models.Model):
+    studio = models.ForeignKey(Studio, null=True, blank=True, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100, default='place_name')
+    description = models.CharField(max_length=500, default='place_description')
     address = models.CharField(max_length=50, default='address')
 
     def __str__(self):
         return(self.name)
-    
+
 
 class Product(models.Model):
     studio = models.ForeignKey(Studio, null=True, blank=True, on_delete=models.CASCADE)

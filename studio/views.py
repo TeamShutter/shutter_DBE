@@ -1,8 +1,8 @@
 from django.http import JsonResponse
 from django.views.generic import View
 from django.shortcuts import render
-from .models import AssignedTime, OpenedTime, Photographer, Studio, Product
-from .serializers import OpenedTimeSerializer, PhotographerSerializer, StudioSerializer, ProductSerializer, AssignedTimeSerializer
+from .models import AssignedTime, OpenedTime, Photographer, Place, Studio, Product
+from .serializers import OpenedTimeSerializer, PhotographerSerializer, PlaceSerializer, StudioSerializer, ProductSerializer, AssignedTimeSerializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
@@ -51,18 +51,6 @@ class AllProductView(APIView):
             return Response({"error" : "get all product"}, status=status.HTTP_404_NOT_FOUND)
 
     def post(self, request, studio_id):
-        # 이 부분은 body에 raw data로 집어넣을때
-        # try:
-        #     data = json.loads(request.body)
-        #     studio = Studio.objects.get(id=data['studioId'])
-        #     name = data['name']
-        #     price = data['price']
-        #     description = data['description']
-        #     duration = data['duration']
-        #     product = Product.objects.create(studio=studio, name=name, price=price, description=description, duration=duration)
-        #     print(product)
-        #     serializer = ProductSerializer(product)
-        #     return Response(serializer.data)
         try:
             studio = Studio.objects.get(id=studio_id)
             name = request.data.get('name')
@@ -109,6 +97,63 @@ class ProductView(APIView):
         except:
             return Response({"error" : "delete product"}, status=status.HTTP_400_BAD_REQUEST)
 
+
+
+class AllPlaceView(APIView):
+    def get(self, request, studio_id):
+        try:
+            studio = Studio.objects.get(id=studio_id)
+            place = Place.objects.filter(studio=studio)
+            serializer = PlaceSerializer(place, many=True)
+            return Response({"data": serializer.data, "success" : "get all place"})
+        
+        except:
+            return Response({"error" : "get all place"}, status=status.HTTP_404_NOT_FOUND)
+
+    def post(self, request, studio_id):
+        try:
+            studio = Studio.objects.get(id=studio_id)
+            name = request.data.get('name')
+            description = request.data.get('decription')
+            address = request.data.get('address')
+            place = Place.objects.create(studio=studio, name=name, description=description, address=address)
+            serializer = PlaceSerializer(place)
+            return Response({"data": serializer.data, "success" : "post place"})
+
+        except:
+            return Response({"error" : "post place"}, status=status.HTTP_400_BAD_REQUEST)
+
+class PlaceView(APIView):
+    def get(self, request, id, studio_id):
+        try:
+            place = Place.objects.get(id=id)
+            serializer = PlaceSerializer(place)
+            return Response({"data": serializer.data, "success" : "get place"})
+            
+        except:
+            return Response({"error" : "get place"}, status=status.HTTP_404_NOT_FOUND)
+
+    def patch(self, request, id, studio_id):
+        try:
+            place = Place.objects.get(id=id)
+            serializer = PlaceSerializer(place, data=request.data, partial=True) 
+            if serializer.is_valid():
+                serializer.save()
+                return Response({"data": serializer.data, "success" : "patch place"})
+            
+            return Response({"error" : "patch place invalid form"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        except:
+            return Response({"error" : "patch place"}, status=status.HTTP_404_NOT_FOUND)
+    
+    def delete(self, request, id, studio_id):
+        try:
+            place = Place.objects.get(id=id)
+            place.delete()
+            return Response({"success" : "delete place"}, status=status.HTTP_200_OK)
+        
+        except:
+            return Response({"error" : "delete place"}, status=status.HTTP_400_BAD_REQUEST)
 
 class AllOpenedTimeView(APIView):
     def get(self, request):

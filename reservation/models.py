@@ -1,14 +1,17 @@
+from itertools import product
 from django.utils import timezone
 from django.db import models
 from account.models import User
 
-from studio.models import AssignedTime, Studio
+from studio.models import AssignedTime, Place, Studio
 
 # Create your models here.
 class Reservation(models.Model):
     STATE_CHOICES = ((1, 'not_confirmed'),(2,'confirmed'),(3,'canceled'), (4, 'done'))
 
     user = models.ForeignKey(User, null= True, blank=True, on_delete=models.CASCADE)
+    studio = models.ForeignKey(Studio, null=True, blank=True, on_delete=models.CASCADE)
+    product = models.ForeignKey(Place, null=True, blank=True, on_delete=models.CASCADE)
     assigned_time = models.ForeignKey(AssignedTime, null = True, blank=True, on_delete=models.CASCADE)
     description = models.CharField(max_length=150, default='reservation_description')
     state = models.IntegerField(choices=STATE_CHOICES, default = 1)
