@@ -6,7 +6,7 @@ from studio.models import AssginedTime, Studio
 
 # Create your models here.
 class Reservation(models.Model):
-    STATE_CHOICES = ((1, 'not_confirmed'),(2,'confirmed'),(3,'canceled'))
+    STATE_CHOICES = ((1, 'unconfirmed'),(2,'confirmed'),(3,'canceled'))
 
     user = models.ForeignKey(User, null= True, blank=True, on_delete=models.CASCADE)
     assigned_time = models.ForeignKey(AssginedTime, null = True, blank=True, on_delete=models.CASCADE)

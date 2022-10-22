@@ -1,11 +1,14 @@
 import json
+from tempfile import TemporaryFile
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views import View
 from account.models import User
-from reservation.serializers import ReservationSerializer
+from reservation.serializers import ReservationSerializer, UserSerializer
 from studio.models import AssginedTime
 from reservation.models import Reservation
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
@@ -34,7 +37,9 @@ class ReservationCreateView(ViewWithoutCSFRAuthentication):
         except:
             return JsonResponse({"error": "Failed to create Reservation"}, status = 400)
         
-        return JsonResponse({"success":"Reservation created successfully!"}, status = 201)
+        return JsonResponse({"success":"Reservation created successfully!"}, status = 201)    
+
+
 
 class ReservationStateView(ViewWithoutCSFRAuthentication):
     def post(self, request):
@@ -45,7 +50,7 @@ class ReservationStateView(ViewWithoutCSFRAuthentication):
 
         try:
             user = User.objects.get(id=body['user_id'])
-            reservation = Reservation.objects.get(id=body['reservation_id'])
+            reservation = Reservation.objects.get(id = body['user_id'])
             # 유저 그룹이 Normal group 인 유저는 액세스 불가 처리 .
             if user.groups.filter(name='NormalUser'):
                 if body['state'] == 'confirm':
@@ -59,3 +64,63 @@ class ReservationStateView(ViewWithoutCSFRAuthentication):
                 return JsonResponse({"success": f"reservation_{reservation.id}'s state is changed successfully."}, status =200)
         except:
             return JsonResponse({"error": "Failed to change reservation state"}, status=400)
+
+class ReservationAllView(APIView):
+    def get(self, request):
+        try:
+            body = json.loads(request.body)
+        except:
+            return JsonResponse({"error": "Invalid parameters"}, status = 400)
+
+        try:
+            user = User.objects.get(id=body['user_id'])
+            reservation = Reservation.objects.filter(user = user )
+            ser=ReservationSerializer(reservation, many=True)
+            return Response(ser.data)
+        except:
+            return JsonResponse({"error": "fail"}, status = 400)
+    
+class ReservationConfirmedView(APIView):
+    def get(self, request):
+        try:
+            body = json.loads(request.body)
+        except:
+            return JsonResponse({"error": "Invalid parameters"}, status = 400)
+
+        try:
+            user = User.objects.get(id=body['user_id'])
+            reservation = Reservation.objects.filter(user = user.id, state=2)
+            ser=ReservationSerializer(reservation, many=True)
+            return Response(ser.data)
+        except:
+            return JsonResponse({"error": "fail"}, status = 400)
+
+class ReservationCanceledView(APIView):
+    def get(self, request):
+        try:
+            body = json.loads(request.body)
+        except:
+            return JsonResponse({"error": "Invalid parameters"}, status = 400)
+
+        try:
+            user = User.objects.get(id=body['user_id'])
+            reservation = Reservation.objects.filter(user = user.id, state=3)
+            ser=ReservationSerializer(reservation, many=True)
+            return Response(ser.data)
+        except:
+            return JsonResponse({"error": "fail"}, status = 400)
+
+class ReservationUnconfirmedView(APIView):
+    def get(self, request):
+        try:
+            body = json.loads(request.body)
+        except:
+            return JsonResponse({"error": "Invalid parameters"}, status = 400)
+
+        try:
+            user = User.objects.get(id=body['user_id'])
+            reservation = Reservation.objects.filter(user = user.id, state=1)
+            ser=ReservationSerializer(reservation, many=True)
+            return Response(ser.data)
+        except:
+            return JsonResponse({"error": "fail"}, status = 400)
