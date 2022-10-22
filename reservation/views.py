@@ -1,11 +1,16 @@
+<<<<<<< HEAD
 import json
 from tempfile import TemporaryFile
 from django.http import JsonResponse
+=======
+>>>>>>> 3928918653cf907d7d7bd749730cd84f277e1841
 from django.shortcuts import render
-from django.views import View
 from account.models import User
+<<<<<<< HEAD
 import reservation
 from reservation import serializers
+=======
+>>>>>>> 3928918653cf907d7d7bd749730cd84f277e1841
 from reservation.serializers import ReservationSerializer
 from studio.models import AssignedTime, OpenedTime, Photographer, Product, Studio
 from reservation.models import Reservation
@@ -100,6 +105,7 @@ class ReservationView(APIView):
         
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+<<<<<<< HEAD
 
 class ReservationListView(APIView):
     def get(self, request, studio_id):
@@ -111,3 +117,27 @@ class ReservationListView(APIView):
             return Response(serializer.data)
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+=======
+    
+    def patch(self, request, id):
+        try:
+            reservation = Reservation.objects.get(id=id)
+            serializer = ReservationSerializer(reservation, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    def delete(self, request, id):
+        try:
+            reservation = Reservation.objects.get(id=id)
+            reservation.delete()
+            return Response(status=status.HTTP_200_OK)
+        
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+>>>>>>> 3928918653cf907d7d7bd749730cd84f277e1841
