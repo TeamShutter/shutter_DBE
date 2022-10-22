@@ -4,31 +4,24 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.views import View
 from account.models import User
-<<<<<<< HEAD
-from reservation.serializers import ReservationSerializer, UserSerializer
-from studio.models import AssginedTime
-from reservation.models import Reservation
-from rest_framework.response import Response
-from rest_framework.views import APIView
-=======
 import reservation
+from reservation import serializers
 from reservation.serializers import ReservationSerializer
-from studio.models import AssignedTime
+from studio.models import AssignedTime, OpenedTime, Photographer, Product, Studio
 from reservation.models import Reservation
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
->>>>>>> 4e604bf7c70cc85757e8b27af508479639b7b6ab
 
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 import json
 
 
-# class ViewWithoutCSFRAuthentication(View):
-#     @method_decorator(csrf_exempt)
-#     def dispatch(self, request, *args, **kwargs):
-#         return super(ViewWithoutCSFRAuthentication, self).dispatch(request, *args, **kwargs)
+class ViewWithoutCSFRAuthentication(View):
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super(ViewWithoutCSFRAuthentication, self).dispatch(request, *args, **kwargs)
 
 
 # status code 랑 JsonResponse 부분 다시 점검
@@ -105,95 +98,16 @@ class ReservationView(APIView):
             serializer = ReservationSerializer(reservation)
             return Response(serializer.data)
         
-<<<<<<< HEAD
-        return JsonResponse({"success":"Reservation created successfully!"}, status = 201)    
-
-
-
-class ReservationStateView(ViewWithoutCSFRAuthentication):
-    def post(self, request):
-        try:
-            body = json.loads(request.body)
-        except:
-            return JsonResponse({"error": "Invalid parameters"}, status = 400)
-
-        try:
-            user = User.objects.get(id=body['user_id'])
-            reservation = Reservation.objects.get(id = body['user_id'])
-            # 유저 그룹이 Normal group 인 유저는 액세스 불가 처리 .
-            if user.groups.filter(name='NormalUser'):
-                if body['state'] == 'confirm':
-                    return JsonResponse({"error": "Unallowed Access for NormalUser"}, status = 403)
-                else:
-                    reservation.state_change(body['state'])
-                return JsonResponse({"success": f"reservation_{reservation.id}'s state is changed successfully."}, status =200)
-            else:
-                # body['state'] 에는 confirmed, unconfirmed, canceled 정보가 필요함.
-                reservation.state_change(body['state'])
-                return JsonResponse({"success": f"reservation_{reservation.id}'s state is changed successfully."}, status =200)
-        except:
-            return JsonResponse({"error": "Failed to change reservation state"}, status=400)
-
-class ReservationAllView(APIView):
-    def get(self, request):
-        try:
-            body = json.loads(request.body)
-        except:
-            return JsonResponse({"error": "Invalid parameters"}, status = 400)
-
-        try:
-            user = User.objects.get(id=body['user_id'])
-            reservation = Reservation.objects.filter(user = user )
-            ser=ReservationSerializer(reservation, many=True)
-            return Response(ser.data)
-        except:
-            return JsonResponse({"error": "fail"}, status = 400)
-    
-class ReservationConfirmedView(APIView):
-    def get(self, request):
-        try:
-            body = json.loads(request.body)
-        except:
-            return JsonResponse({"error": "Invalid parameters"}, status = 400)
-
-        try:
-            user = User.objects.get(id=body['user_id'])
-            reservation = Reservation.objects.filter(user = user.id, state=2)
-            ser=ReservationSerializer(reservation, many=True)
-            return Response(ser.data)
-        except:
-            return JsonResponse({"error": "fail"}, status = 400)
-
-class ReservationCanceledView(APIView):
-    def get(self, request):
-        try:
-            body = json.loads(request.body)
-        except:
-            return JsonResponse({"error": "Invalid parameters"}, status = 400)
-
-        try:
-            user = User.objects.get(id=body['user_id'])
-            reservation = Reservation.objects.filter(user = user.id, state=3)
-            ser=ReservationSerializer(reservation, many=True)
-            return Response(ser.data)
-        except:
-            return JsonResponse({"error": "fail"}, status = 400)
-
-class ReservationUnconfirmedView(APIView):
-    def get(self, request):
-        try:
-            body = json.loads(request.body)
-        except:
-            return JsonResponse({"error": "Invalid parameters"}, status = 400)
-
-        try:
-            user = User.objects.get(id=body['user_id'])
-            reservation = Reservation.objects.filter(user = user.id, state=1)
-            ser=ReservationSerializer(reservation, many=True)
-            return Response(ser.data)
-        except:
-            return JsonResponse({"error": "fail"}, status = 400)
-=======
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
->>>>>>> 4e604bf7c70cc85757e8b27af508479639b7b6ab
+
+class ReservationListView(APIView):
+    def get(self, request, studio_id):
+        try:
+            state = request.data.get('state')
+            studio = Studio.objects.get(id = studio_id)
+            reservations = Reservation.objects.filter(state=state, studio = studio)
+            serializer = ReservationSerializer(reservations, many=True)
+            return Response(serializer.data)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)

@@ -2,16 +2,13 @@ from django.utils import timezone
 from django.db import models
 from account.models import User
 
-from studio.models import AssignedTime, Studio
+from studio.models import AssignedTime, Product, Studio
 
 # Create your models here.
 class Reservation(models.Model):
-<<<<<<< HEAD
-    STATE_CHOICES = ((1, 'unconfirmed'),(2,'confirmed'),(3,'canceled'))
-=======
     STATE_CHOICES = ((1, 'not_confirmed'),(2,'confirmed'),(3,'canceled'), (4, 'done'))
->>>>>>> 4e604bf7c70cc85757e8b27af508479639b7b6ab
-
+    product = models.ForeignKey(Product, null=True, blank = True, on_delete = models.CASCADE)
+    studio = models.ForeignKey(Studio, null = True, blank = True, on_delete=models.CASCADE)
     user = models.ForeignKey(User, null= True, blank=True, on_delete=models.CASCADE)
     assigned_time = models.ForeignKey(AssignedTime, null = True, blank=True, on_delete=models.CASCADE)
     description = models.CharField(max_length=150, default='reservation_description')
