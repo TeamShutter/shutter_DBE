@@ -18,14 +18,19 @@ class Reservation(models.Model):
     def __str__(self):
         return(f"{self.user.username}'s reservation : {self.id}")
 
-    def state_change(self, state):
-        if state == 'confirmed':
-            self.state = 2
-        elif state == 'unconfirmed':
-            self.state = 1
-        elif state == 'canceled':
-            self.state = 3
-        elif state == 'done':
-            self.state = 4
-        self.save()
+    # def state_change(self, state):
+    #     assigned_id = self.assigned_time
+    #     assigned_time = AssignedTime.objects.get(id=assigned_id)
+    #     if state == 'confirmed':
+    #         self.state = 2
+    #         assigned_time.update_absence()
+    #     elif state == 'unconfirmed':
+    #         self.state = 1
+    #         assigned_time.update_absence()
+    #     elif state == 'canceled':
+    #         self.state = 3
+    #         assigned_time.update_absence()
+    #     elif state == 'done':
+    #         self.state = 4
+    #     self.save()
     

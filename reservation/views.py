@@ -17,10 +17,10 @@ from django.utils.decorators import method_decorator
 import json
 
 
-class ViewWithoutCSFRAuthentication(View):
-    @method_decorator(csrf_exempt)
-    def dispatch(self, request, *args, **kwargs):
-        return super(ViewWithoutCSFRAuthentication, self).dispatch(request, *args, **kwargs)
+# class ViewWithoutCSFRAuthentication(View):
+#     @method_decorator(csrf_exempt)
+#     def dispatch(self, request, *args, **kwargs):
+#         return super(ViewWithoutCSFRAuthentication, self).dispatch(request, *args, **kwargs)
 
 
 # status code 랑 JsonResponse 부분 다시 점검
@@ -84,6 +84,7 @@ class AllReservationView(APIView):
             assigned_time = AssignedTime.objects.get(id=request.data.get('assignedtime_id'))
             description = request.data.get('description')
             reservation = Reservation.objects.create(user=user, assigned_time=assigned_time, description=description)
+            reservation.assigned_time.update_available()
             serializer = ReservationSerializer(reservation)
             return Response(serializer.data)
         
@@ -91,7 +92,7 @@ class AllReservationView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)      
 
 class ReservationView(APIView):
-    def get(self, request, id):
+    def get(self, request, id, studio_id):
         try:
             reservation = Reservation.objects.get(id=id)
             serializer = ReservationSerializer(reservation)
@@ -100,6 +101,23 @@ class ReservationView(APIView):
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+    def patch(self, request, id, studio_id):
+        try:
+            reservation = Reservation.objects.get(id=id)
+            if request.data["state"] == 3:
+                reservation.assigned_time.update_available()
+                reservation.delete()
+            
+            serializer = ReservationSerializer(reservation, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({"data": serializer.data, "success": "reservation changed"})
+            
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+    
 class ReservationListView(APIView):
     def get(self, request, studio_id):
         try:
