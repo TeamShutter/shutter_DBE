@@ -6,9 +6,13 @@ from django.utils import timezone
 # Create your models here.
 class Studio(models.Model):
     name = models.CharField(max_length = 50, default='studio_name')
+    description = models.TextField(default='description')
+    phone = models.CharField(max_length=50, default='010-0000-0000')
+    address = models.CharField(max_length=50, default='address')
 
     def __str__(self):
         return(self.name)
+    
 
 class Product(models.Model):
     studio = models.ForeignKey(Studio, null=True, blank=True, on_delete=models.CASCADE)
@@ -28,14 +32,14 @@ class Product(models.Model):
         self.save()
 
 
-class OpenedTime(models.Model):
+class OpenedTime(models.Model): #이거는 studio랑 manytomany field로 이루어져야할듯??
     studio = models.ForeignKey(Studio, null=True, blank=True, on_delete=models.CASCADE)
     date = models.DateField(default=datetime.now)
-    hour = models.IntegerField( default=00)
-    minute = models.IntegerField( default=00)
+    hour = models.IntegerField(default=00)
+    minute = models.IntegerField(default=00)
 
     def __str__(self):
-        return(f'{self.date}:{self.hour}:{self.minute}')
+        return(f'{self.date}:{self.hour}:{self.minute}') #이러면 곂칠듯 이름? 저장은 되는데 우리가 구분할 필요가 있나?
 
 
 class Photographer(models.Model):
@@ -46,7 +50,10 @@ class Photographer(models.Model):
         return(self.name)
 
 
-class AssginedTime(models.Model):
+# 이부분 수정이 필요할듯.. 애초에 OpenedTime 만들때 photographer를 넣어야하지 않나??
+# 이러면 오픈 시간 열고, 또 오픈시간에 사진작가를 저장하는 과정이 필요할듯..
+# 그리고 오픈 시간이 선택되면 그 오픈 시간이 스튜디오 다른 사직 작가들은 선택 못해야하는거 아닌가?
+class AssignedTime(models.Model): 
     photographer = models.ForeignKey(Photographer, null=True, blank=True, on_delete=models.CASCADE)
     opened_time = models.ForeignKey(OpenedTime, null=True, blank=True, on_delete=models.CASCADE)
     # if photographer is not available, is_absence is True.
