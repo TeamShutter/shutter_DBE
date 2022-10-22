@@ -1,9 +1,5 @@
-import json
-from django.http import JsonResponse
 from django.shortcuts import render
-from django.views import View
 from account.models import User
-import reservation
 from reservation.serializers import ReservationSerializer
 from studio.models import AssignedTime
 from reservation.models import Reservation
@@ -95,6 +91,28 @@ class ReservationView(APIView):
             reservation = Reservation.objects.get(id=id)
             serializer = ReservationSerializer(reservation)
             return Response(serializer.data)
+        
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+    
+    def patch(self, request, id):
+        try:
+            reservation = Reservation.objects.get(id=id)
+            serializer = ReservationSerializer(reservation, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    def delete(self, request, id):
+        try:
+            reservation = Reservation.objects.get(id=id)
+            reservation.delete()
+            return Response(status=status.HTTP_200_OK)
         
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
