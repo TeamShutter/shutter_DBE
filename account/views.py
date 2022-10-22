@@ -2,7 +2,10 @@ from django.conf import settings
 from rest_framework.response import Response
 from django.http import JsonResponse
 from rest_framework import generics, status, permissions
-from .serializers import SignUpSerializer, LogInSerializer, LogOutSerializer
+from rest_framework.views import APIView
+
+from account.models import User
+from .serializers import SignUpSerializer, LogInSerializer, LogOutSerializer, UserSerializer
 
 class SignUpView(generics.GenericAPIView):
     authentication_classes = []
@@ -43,3 +46,19 @@ class LogOutView(generics.GenericAPIView):
         res.delete_cookie('access_token')
         res.delete_cookie('refresh_token')
         return res
+
+class LoadUserView(APIView):
+    def get(self, request):
+        try:
+            user_id = request.user
+            user = UserSerializer(user_id)
+            return Response(
+                {'user': user},
+                status=status.HTTP_200_OK
+            )
+
+        except:
+            return Response(
+                {'error': 'Something went wrong when loading user'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
