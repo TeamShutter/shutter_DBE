@@ -1,6 +1,8 @@
 from django.http import JsonResponse
 from django.views.generic import View
 from django.shortcuts import render
+
+from reservation import serializers
 from .models import AssignedTime, OpenedTime, Photographer, Studio, Product
 from .serializers import OpenedTimeSerializer, PhotographerSerializer, StudioSerializer, ProductSerializer, AssignedTimeSerializer
 from rest_framework.response import Response
@@ -252,3 +254,4 @@ class AssignedTimeView(APIView):
 
         except:
             return
+

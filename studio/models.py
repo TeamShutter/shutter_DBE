@@ -59,3 +59,7 @@ class AssignedTime(models.Model):
     # if photographer is not available, is_absence is True.
     is_absence = models.BooleanField(default=False)
 
+    def update_absence(self):
+        self.is_absence = True if self.is_absence == False else False
+        self.save()
+
