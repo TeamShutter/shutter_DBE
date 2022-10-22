@@ -66,5 +66,9 @@ class AssignedTime(models.Model):
     photographer = models.ForeignKey(Photographer, null=True, blank=True, on_delete=models.CASCADE)
     opened_time = models.ForeignKey(OpenedTime, null=True, blank=True, on_delete=models.CASCADE)
     # if photographer is not available, is_absence is True.
-    is_absence = models.BooleanField(default=False)
+    is_available = models.BooleanField(default=False)
+
+    def update_available(self):
+        self.is_available = True if self.is_available == False else False
+        self.save()
 

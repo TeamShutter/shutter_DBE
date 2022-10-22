@@ -1,7 +1,12 @@
+import json
+from tempfile import TemporaryFile
+from django.http import JsonResponse
 from django.shortcuts import render
 from account.models import User
+import reservation
+from reservation import serializers
 from reservation.serializers import ReservationSerializer
-from studio.models import AssignedTime, Place, Studio
+from studio.models import AssignedTime, OpenedTime, Photographer, Product, Studio
 from reservation.models import Reservation
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -40,6 +45,7 @@ class AllReservationView(APIView):
             assigned_time = AssignedTime.objects.get(id=request.data.get('assignedtime_id'))
             description = request.data.get('description')
             reservation = Reservation.objects.create(user=user, assigned_time=assigned_time, description=description)
+            reservation.assigned_time.update_available()
             serializer = ReservationSerializer(reservation)
             return Response({'data' : serializer.data, 'success' : 'post reservation'})
         
@@ -59,21 +65,17 @@ class ReservationView(APIView):
     def patch(self, request, id, studio_id):
         try:
             reservation = Reservation.objects.get(id=id)
+            if request.data["state"] == 3:
+                reservation.assigned_time.update_available()
+                reservation.delete()
+            
             serializer = ReservationSerializer(reservation, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
-                return Response({'data' : serializer.data, 'success' : 'patch reservation'})
+                return Response({"data": serializer.data, "success": "reservation changed"})
             
             return Response({'error' : 'patch reservation invalid form'}, status=status.HTTP_400_BAD_REQUEST)
         
         except:
             return Response({'error' : 'patch reservation'}, status=status.HTTP_404_NOT_FOUND)
     
-    def delete(self, request, id, studio_id):
-        try:
-            reservation = Reservation.objects.get(id=id)
-            reservation.delete()
-            return Response({'success' : 'delete reservation'}, status=status.HTTP_200_OK)
-        
-        except:
-            return Response({'error' : 'delete reservation'}, status=status.HTTP_400_BAD_REQUEST)

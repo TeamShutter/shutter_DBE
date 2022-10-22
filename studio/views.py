@@ -291,9 +291,11 @@ class AllAssignedTimeView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class AssignedTimeView(APIView):
-    def get(self, request):
+    def patch(self, request, studio_id):
         try:
+            
             return
 
         except:
             return
+
