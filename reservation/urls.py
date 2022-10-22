@@ -3,6 +3,6 @@ from reservation import views
 
 app_name = 'reservation'
 urlpatterns = [
-    path("new/", views.ReservationCreateView.as_view(), name='create_reservation'),
-    path("state/", views.ReservationStateView.as_view(), name='change_reservation_state'),
+    path("reservation/", views.AllReservationView.as_view(), name='all_reservation'),
+    # path("reservation/<int:id>", views.ReservationView.as_view(), name='reservation'),
 ]
