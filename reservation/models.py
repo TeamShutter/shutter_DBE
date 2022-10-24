@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.db import models
 from account.models import User
 
-from studio.models import AssignedTime, Product, Studio
+from studio.models import AssignedTime, Place, Product, Studio
 
 # Create your models here.
 class Reservation(models.Model):

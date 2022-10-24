@@ -6,7 +6,7 @@ from account.models import User
 import reservation
 from reservation import serializers
 from reservation.serializers import ReservationSerializer
-from studio.models import AssignedTime, OpenedTime, Photographer, Product, Studio
+from studio.models import AssignedTime, OpenedTime, Photographer, Place, Product, Studio
 from reservation.models import Reservation
 from rest_framework.views import APIView
 from rest_framework.response import Response

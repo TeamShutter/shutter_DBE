@@ -8,7 +8,7 @@ class User(AbstractUser):
     last_name = None
     first_name = None
     name = models.CharField(max_length=10, default='name')
-
+    
     
     def __str__(self):
         return(f'{self.id}')
