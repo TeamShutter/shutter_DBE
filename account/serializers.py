@@ -1,3 +1,4 @@
+from pyexpat import model
 from rest_framework import serializers
 from .models import User
 from django.contrib import auth
@@ -66,3 +67,8 @@ class LogOutSerializer(serializers.Serializer):
         except TokenError:
             msg = 'Token is blacklisted'
             raise serializers.ValidationError(msg, code='authorization')
+
+class UserSerializer(serializers.Serializer):
+    class Meta:
+        model = User
+        fields = ['username', 'email']
