@@ -3,9 +3,9 @@ from rest_framework.response import Response
 from django.http import JsonResponse
 from rest_framework import generics, status, permissions
 from rest_framework.views import APIView
-
-from account.models import User
+from django.contrib.auth.models import Group
 from .serializers import SignUpSerializer, LogInSerializer, LogOutSerializer, UserSerializer
+from django.contrib.contenttypes.models import ContentType
 
 class SignUpView(generics.GenericAPIView):
     authentication_classes = []
@@ -50,10 +50,10 @@ class LogOutView(generics.GenericAPIView):
 class LoadUserView(APIView):
     def get(self, request):
         try:
+            studio_group, created =  Group.objects.get_or_create(name="Studio")
             user_id = request.user
-            
+            user_id.groups.add(studio_group)
             user = UserSerializer(user_id)
-            print(type(user))
             
             return Response(
                 {'user': user.data},
@@ -65,3 +65,8 @@ class LoadUserView(APIView):
                 {'error': 'Something went wrong when loading user'},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+class UserGroupView(APIView):
+    studio_group, created =  Group.objects.get_or_create(name="Studio")
+
+    # content_type = ContentType.objects.get_for_model(Reservatio) 
