@@ -8,36 +8,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 import json
 
-# def studio_inst_to_dict(studio_inst):
-#     result = {}
-#     result['id'] = studio_inst.id
-#     result['name'] = studio_inst.name
-#     return result
 
-# class StudioListView(APIView):
-#     def get(self, request):
-#         try:
-#             studio_list = []
-#             studio_queryset = Studio.objects.all()
-#             for studio_inst in studio_queryset:
-#                 studio_list.append(
-#                     studio_inst_to_dict(studio_inst)
-#                 )
-#             data = {"studios": studio_list}
-#             return JsonResponse(data, status=200)
-#         except:
-#             return JsonResponse({"msg": "Failed to get studios"}, status =404)
-
-
-
-# class StudioCreateView(View):
-#     def post(self, request, studio_id):
-#         try:
-#             body = json.loads(request.body)
-#         except:
-#             return JsonResponse({"msg": "Invalid parameters"}, status =400)
-#         try:
-#             studio_inst = Studio.objects.
 
 class AllProductView(APIView):
     def get(self, request, studio_id):
@@ -290,12 +261,20 @@ class AllAssignedTimeView(APIView):
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-class AssignedTimeView(APIView):
-    def patch(self, request, studio_id):
-        try:
-            
-            return
-
+class AllStudioView(APIView):
+    def get(self, request):
+        try: 
+            studios = Studio.objects.all()
+            serializer = StudioSerializer(studios, many=True)
+            return Response({"data" : serializer.data, "success": "get all studios"})
         except:
-            return
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
+class StudioView(APIView):
+    def get(self, request, studio_id):
+        try:
+            studio = Studio.objects.get(id=studio_id)
+            serializer = StudioSerializer(studio)
+            return Response({"data" : serializer.data, "success": "get studio"})
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
