@@ -51,9 +51,12 @@ class LoadUserView(APIView):
     def get(self, request):
         try:
             user_id = request.user
+            
             user = UserSerializer(user_id)
+            print(type(user))
+            
             return Response(
-                {'user': user},
+                {'user': user.data},
                 status=status.HTTP_200_OK
             )
 
