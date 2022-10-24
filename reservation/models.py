@@ -5,6 +5,7 @@ from account.models import User
 
 from studio.models import AssignedTime, Place, Product, Studio
 
+
 # Create your models here.
 class Reservation(models.Model):
     STATE_CHOICES = ((1, 'not_confirmed'),(2,'confirmed'),(3,'canceled'), (4, 'done'))
