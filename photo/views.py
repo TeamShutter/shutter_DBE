@@ -7,7 +7,6 @@ from studio.models import Studio
 from .models import Photo, Like
 from .serializers import PhotoByStudioSerializer, PhotoSerializer
 from studio.serializers import StudioSerializer
-from tag.models import Tag
 from django.contrib.auth.models import User
 from rest_framework.pagination import PageNumberPagination
 # Create your views here.
@@ -26,11 +25,11 @@ def GetAllPhotos(request):
         if request.GET.get('price') and request.GET.get('price') != '0':
             studios = Studio.objects.filter(price = request.GET.get('price'))
             allPhotos = allPhotos.filter(studio__in = studios)
-        if request.GET.get('tags') and request.GET.get('tags') != '0':
-            id_list = id=request.GET.getlist('tags')
-            for id in id_list:
-                tags = Tag.objects.filter(id=id)
-                allPhotos = allPhotos.filter(tags__in=tags)
+        # if request.GET.get('tags') and request.GET.get('tags') != '0':
+        #     id_list = id=request.GET.getlist('tags')
+        #     for id in id_list:
+        #         tags = Tag.objects.filter(id=id)
+        #         allPhotos = allPhotos.filter(tags__in=tags)
         if request.GET.get('sex') and request.GET.get('sex') != '0':
             allPhotos = allPhotos.filter(sex=request.GET.get('sex'))
         if request.GET.get('town') and request.GET.get('town') != '0':

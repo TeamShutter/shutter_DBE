@@ -1,11 +1,21 @@
 from rest_framework import serializers
 from .models import AssignedTime, Photographer, Place, Studio, Product, OpenedTime
 
-
+#  description = models.TextField(default='description')
+    
+#     phone = models.CharField(max_length=50, default='010-0000-0000')
+#     openTime = models.CharField(max_length=50, default='openTime')
+#     closeTime = models.CharField(max_length=50, default='closeTime')
+#     follow_users = models.ManyToManyField(User, blank=True, related_name= 'studio_follows', through ='Follow') 
+#     address = models.CharField(max_length=50, default='address')
+#     town = models.CharField(max_length=50, default='town')
+#     photoshop = models.IntegerField(choices=PHOTOSHOP_CHOICES, default=0)
+#     thumbnail = models.CharField(max_length=500, default="url")
 class StudioSerializer(serializers.Serializer):
+    name = serializers.CharField()
     class Meta:
         model = Studio
-        fields = ('name')
+        fields = ('name', 'phone', 'open_time', 'close_time', 'address', 'town', 'follow_users', 'thumbnail')
 
 class ProductSerializer(serializers.Serializer):
     # studio = StudioSerializer(read_only=True)  이거 들어가면 안되는데 왜 그런거지??..
