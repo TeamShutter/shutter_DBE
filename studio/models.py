@@ -19,8 +19,6 @@ class Studio(models.Model):
     photoshop = models.IntegerField(choices=PHOTOSHOP_CHOICES, default=0)
     thumbnail = models.CharField(max_length=500, default="url")
     
-    
-    
     def __str__(self):
         return(self.name)
 
@@ -86,7 +84,8 @@ class AssignedTime(models.Model):
 
 class StudioImage(models.Model):
     url = models.CharField(max_length=500, default='url')
-    studio = models.ForeignKey(Studio, null = True, on_delete=models.CASCADE)
+    studio = models.ForeignKey(Studio, null = True, on_delete=models.CASCADE, related_name = "studio_images")
+
 
 
 class Review(models.Model):

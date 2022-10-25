@@ -282,6 +282,7 @@ class StudioView(APIView):
         try:
             studio = Studio.objects.get(id=studio_id)
             photos = Photo.objects.filter(studio_id=studio_id)
+            
             studio_serializer = StudioSerializer(studio)
             photo_serializer = PhotoSerializer(photos, many= True)
             return Response({"studio_data" : studio_serializer.data, "photo_data" : photo_serializer.data, "success": "get studio"})
