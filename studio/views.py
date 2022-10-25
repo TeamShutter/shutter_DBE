@@ -269,13 +269,23 @@ class AllStudioView(APIView):
     authentication_classes=[JWTAuthenticationSafe]
 
     def get(self, request):
-        try: 
-            studios = Studio.objects.all()
-            serializer = StudioSerializer(studios, many=True)
-            return Response({"data" : serializer.data, "success": "get all studios"})
-        except:
-            return Response({"error": "failed to get studios"},status=status.HTTP_400_BAD_REQUEST)
+        if not request.data.get('town'):
+            try:
+                studios = Studio.objects.all()
+                serializer = StudioSerializer(studios, many=True)
+                return Response({"data" : serializer.data, "success": "get all studios"})
+            except:
+                return Response({"error": "failed to get all studios"},status=status.HTTP_400_BAD_REQUEST)
+        else:
+            try:
+                town = request.data.get('town')
+                studios = Studio.objects.filter(town=town)
+                serializer = StudioSerializer(studios, many=True)
+                return Response({"data" : serializer.data, "success": "get all town's studios"})
+            except:
+                return Response({"error": "failed to get town's studios"},status=status.HTTP_400_BAD_REQUEST)
 
+                
 class StudioView(APIView):
     authentication_classes=[JWTAuthenticationSafe]
     def get(self, request, studio_id):
