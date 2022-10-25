@@ -18,55 +18,24 @@ class AllPhotoView(APIView):
     authentication_classes=[JWTAuthenticationSafe]
     def get(self, request):
         try:
+            paginator = PageNumberPagination()
+            paginator.page_size = 60
             photos = Photo.objects.all()
-            serializer = PhotoSerializer(photos, many=True)
-            return Response({"data" : serializer.data, "success": "get all photos"})
+            result_photos = paginator.paginate_queryset(photos, request)
+            serializer = PhotoSerializer(result_photos, many=True)
+            
+            return Response({"data" : serializer.data, "success": "get all photos"}, status=status.HTTP_200_OK)
         except:
             return Response({"error": "failed to get all photos"},status=status.HTTP_400_BAD_REQUEST)
 
+class PhotoView(APIView):
+    authentication_classes=[JWTAuthenticationSafe]
+    def get(self, request, photo_id):
+        photo = Photo.objects.get(id = photo_id)
+        serializer = PhotoSerializer(photo)
+        like_count = len(Like.objects.filter(photo=photo))
+        return Response({'photo_data': serializer.data, 'like_data': like_count}, status=status.HTTP_200_OK)
 
-
-# @api_view(['GET'])
-# def GetAllPhotos(request):
-#     paginator = PageNumberPagination()
-#     paginator.page_size = 100
-#     if request.GET.get('studioId') and request.GET.get('studioId') != '0':
-#         studioId = request.GET.get('studioId')
-#         allPhotos = Photo.objects.filter(studio = studioId)
-#         serializer = PhotoByStudioSerializer(allPhotos, many=True)
-#     else:
-#         allPhotos = Photo.objects.all()
-#         if request.GET.get('price') and request.GET.get('price') != '0':
-#             studios = Studio.objects.filter(price = request.GET.get('price'))
-#             allPhotos = allPhotos.filter(studio__in = studios)
-#         # if request.GET.get('tags') and request.GET.get('tags') != '0':
-#         #     id_list = id=request.GET.getlist('tags')
-#         #     for id in id_list:
-#         #         tags = Tag.objects.filter(id=id)
-#         #         allPhotos = allPhotos.filter(tags__in=tags)
-#         if request.GET.get('sex') and request.GET.get('sex') != '0':
-#             allPhotos = allPhotos.filter(sex=request.GET.get('sex'))
-#         if request.GET.get('town') and request.GET.get('town') != '0':
-#             studios = Studio.objects.filter(town = request.GET.get('town'))
-#             allPhotos = allPhotos.filter(studio__in = studios)
-#         if request.GET.get('photoshop') and request.GET.get('photoshop') != '0':
-#             studios = Studio.objects.filter(photoshop = request.GET.get('photoshop'))
-#             allPhotos = allPhotos.filter(studio__in = studios)
-    
-#     result_page = paginator.paginate_queryset(allPhotos, request)
-#     serializer = PhotoSerializer(result_page, many=True)
-#     return Response(serializer.data)
-# class PhotoView(APIView):
-#     authentication_classes=[JWTAuthenticationSafe]
-#     def 
-
-
-@api_view(['GET'])
-def GetPhoto(request, pid):
-    photo = Photo.objects.get(id=pid)
-    serializer = PhotoSerializer(photo)
-    like_count = len(Like.objects.filter(photo=photo))
-    return Response(serializer.data)
 
 @api_view(['GET'])
 def LikePhoto(request, pid):

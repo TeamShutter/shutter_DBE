@@ -9,7 +9,8 @@ class Studio(models.Model):
 
     name = models.CharField(max_length = 50, default='studio_name')
     description = models.TextField(default='description')
-    
+    naver_link = models.CharField(max_length = 200, default='naver_link')
+    instagram_link = models.CharField(max_length = 200, default='instagram_link')
     phone = models.CharField(max_length=50, default='010-0000-0000')
     open_time = models.CharField(max_length=50, default='openTime')
     close_time = models.CharField(max_length=50, default='closeTime')
