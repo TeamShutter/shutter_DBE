@@ -50,7 +50,6 @@ class LogOutView(generics.GenericAPIView):
 class LoadUserView(APIView):
     def get(self, request):
         try:
-            studio_group, created =  Group.objects.get_or_create(name="Studio")
             user_id = request.user
             user_id.groups.add(studio_group)
             user = UserSerializer(user_id)
