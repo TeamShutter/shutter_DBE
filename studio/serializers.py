@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import AssignedTime, Photographer, Place, Studio, Product, OpenedTime
+from .models import AssignedTime, Photographer, Place, Studio, Product, OpenedTime, StudioImage
 
 #  description = models.TextField(default='description')
     
@@ -11,11 +11,18 @@ from .models import AssignedTime, Photographer, Place, Studio, Product, OpenedTi
 #     town = models.CharField(max_length=50, default='town')
 #     photoshop = models.IntegerField(choices=PHOTOSHOP_CHOICES, default=0)
 #     thumbnail = models.CharField(max_length=500, default="url")
-class StudioSerializer(serializers.Serializer):
-    name = serializers.CharField()
+
+class StudioImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StudioImage
+        fields = ('id', 'url')
+class StudioSerializer(serializers.ModelSerializer):
+    studio_images = StudioImageSerializer(many=True)
     class Meta:
         model = Studio
-        fields = ('name', 'phone', 'open_time', 'close_time', 'address', 'town', 'follow_users', 'thumbnail')
+        fields = ('name', 'thumbnail' ,'studio_images', 'phone', 'open_time', 'close_time', 'address', 'town', 'follow_users')
+
+
 
 class ProductSerializer(serializers.Serializer):
     # studio = StudioSerializer(read_only=True)  이거 들어가면 안되는데 왜 그런거지??..
