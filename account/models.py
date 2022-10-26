@@ -10,7 +10,7 @@ class User(AbstractUser):
     name = models.CharField(max_length=10, default='name')
 
     def __str__(self):
-        return(f'{self.id}')
+        return(f'{self.name}')
 
     def tokens(self):
         refresh = RefreshToken.for_user(self)
