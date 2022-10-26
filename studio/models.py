@@ -2,13 +2,24 @@ from datetime import datetime
 from email.policy import default
 from django.db import models
 from django.utils import timezone
-
+from account.models import User
 # Create your models here.
 class Studio(models.Model):
+    PHOTOSHOP_CHOICES = ((1, '1'), (2, '2'), (3, '3'))
+
     name = models.CharField(max_length = 50, default='studio_name')
     description = models.TextField(default='description')
+    naver_link = models.CharField(max_length = 200, default='naver_link')
+    instagram_link = models.CharField(max_length = 200, default='instagram_link')
     phone = models.CharField(max_length=50, default='010-0000-0000')
-
+    open_time = models.CharField(max_length=50, default='openTime')
+    close_time = models.CharField(max_length=50, default='closeTime')
+    follow_users = models.ManyToManyField(User, blank=True, related_name= 'studio_follows', through ='Follow') 
+    address = models.CharField(max_length=50, default='address')
+    town = models.CharField(max_length=50, default='town')
+    photoshop = models.IntegerField(choices=PHOTOSHOP_CHOICES, default=0)
+    thumbnail = models.CharField(max_length=500, default="url")
+    
     def __str__(self):
         return(self.name)
 
@@ -66,5 +77,34 @@ class AssignedTime(models.Model):
     photographer = models.ForeignKey(Photographer, null=True, blank=True, on_delete=models.CASCADE)
     opened_time = models.ForeignKey(OpenedTime, null=True, blank=True, on_delete=models.CASCADE)
     # if photographer is not available, is_absence is True.
-    is_absence = models.BooleanField(default=False)
+    is_available = models.BooleanField(default=False)
 
+    def update_available(self):
+        self.is_available = True if self.is_available == False else False
+        self.save()
+
+class StudioImage(models.Model):
+    url = models.CharField(max_length=500, default='url')
+    studio = models.ForeignKey(Studio, null = True, on_delete=models.CASCADE, related_name = "studio_images")
+
+
+
+class Review(models.Model):
+    RATING_CHOICES = ((1, '1'),(2,'2'),(3,'3'),(4,'4'),(5,'5'))
+    content = models.CharField(max_length=200, default='review')
+    author = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
+    studio = models.ForeignKey(Studio, null=True, blank=True, on_delete=models.CASCADE)
+    rating = models.IntegerField(choices=RATING_CHOICES, default =0)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        db_table = "review"
+
+
+class Follow(models.Model):
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
+    studio = models.ForeignKey(Studio, null=True, blank=True, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(default = timezone.now)
+
+    class Meta:
+        db_table = "follow"

@@ -1,6 +1,10 @@
 from django.http import JsonResponse
 from django.views.generic import View
 from django.shortcuts import render
+
+from account.authenticate import JWTAuthenticationSafe
+from photo.models import Photo
+from photo.serializers import PhotoSerializer
 from .models import AssignedTime, OpenedTime, Photographer, Place, Studio, Product
 from .serializers import OpenedTimeSerializer, PhotographerSerializer, PlaceSerializer, StudioSerializer, ProductSerializer, AssignedTimeSerializer
 from rest_framework.response import Response
@@ -8,36 +12,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 import json
 
-# def studio_inst_to_dict(studio_inst):
-#     result = {}
-#     result['id'] = studio_inst.id
-#     result['name'] = studio_inst.name
-#     return result
 
-# class StudioListView(APIView):
-#     def get(self, request):
-#         try:
-#             studio_list = []
-#             studio_queryset = Studio.objects.all()
-#             for studio_inst in studio_queryset:
-#                 studio_list.append(
-#                     studio_inst_to_dict(studio_inst)
-#                 )
-#             data = {"studios": studio_list}
-#             return JsonResponse(data, status=200)
-#         except:
-#             return JsonResponse({"msg": "Failed to get studios"}, status =404)
-
-
-
-# class StudioCreateView(View):
-#     def post(self, request, studio_id):
-#         try:
-#             body = json.loads(request.body)
-#         except:
-#             return JsonResponse({"msg": "Invalid parameters"}, status =400)
-#         try:
-#             studio_inst = Studio.objects.
 
 class AllProductView(APIView):
     def get(self, request, studio_id):
@@ -290,10 +265,36 @@ class AllAssignedTimeView(APIView):
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-class AssignedTimeView(APIView):
-    def get(self, request):
-        try:
-            return
+class AllStudioView(APIView):
+    authentication_classes=[JWTAuthenticationSafe]
 
+    def get(self, request):
+        if not request.data.get('town'):
+            try:
+                studios = Studio.objects.all()
+                serializer = StudioSerializer(studios, many=True)
+                return Response({"data" : serializer.data, "success": "get all studios"})
+            except:
+                return Response({"error": "failed to get all studios"},status=status.HTTP_400_BAD_REQUEST)
+        else:
+            try:
+                town = request.data.get('town')
+                studios = Studio.objects.filter(town=town)
+                serializer = StudioSerializer(studios, many=True)
+                return Response({"data" : serializer.data, "success": "get all town's studios"})
+            except:
+                return Response({"error": "failed to get town's studios"},status=status.HTTP_400_BAD_REQUEST)
+
+                
+class StudioView(APIView):
+    authentication_classes=[JWTAuthenticationSafe]
+    def get(self, request, studio_id):
+        try:
+            studio = Studio.objects.get(id=studio_id)
+            photos = Photo.objects.filter(studio_id=studio_id)
+            
+            studio_serializer = StudioSerializer(studio)
+            photo_serializer = PhotoSerializer(photos, many= True)
+            return Response({"studio_data" : studio_serializer.data, "photo_data" : photo_serializer.data, "success": "get studio"})
         except:
-            return
+            return Response({"error": "failed to get studio infos."},status=status.HTTP_400_BAD_REQUEST)

@@ -68,7 +68,7 @@ class LogOutSerializer(serializers.Serializer):
             msg = 'Token is blacklisted'
             raise serializers.ValidationError(msg, code='authorization')
 
-class UserSerializer(serializers.Serializer):
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['username']
+        fields = ['username', 'email', 'groups']
