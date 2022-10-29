@@ -13,17 +13,26 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 from pathlib import Path
 from datetime import timedelta
 import corsheaders
+import environ
+import os
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+load_dotenv()
+env = environ.Env()
+environ.Env.read_env(
+    env_file=os.path.join(BASE_DIR, '.env')
+)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-tmqnsq_(n+z%0#a7)bafo&x4-h39hw5-uw^fgj*e_e%+o0)+0p'
-
+SECRET_KEY = os.environ.get('DJANGO_KEY')
+KAKAO_REST_API_KEY = os.environ.get('KAKAO_KEY')
+STATE = os.environ.get('STATE')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -48,16 +57,12 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'photo',
-    # # dj-rest-auth
-    # 'dj_rest_auth',
-    # 'dj_rest_auth.registration',
-    # #allauth
-    # 'allauth',
-    # 'allauth.account', #이거 떄문에 에러뜨는데 이름 중복되는듯??
-    # 'allauth.socialaccount',
-    # 'allauth.socialaccount.providers.kakao',
-    # 'allauth.socialaccount.providers.google',
-    # 'rest_frame.authtoken'
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.kakao',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
@@ -173,22 +178,23 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'accounts.User'
 
+# REST_FRAMEWORK = {
+#     'DEFAULT_AUTHENTICATION_CLASSES': (
+#         'accounts.authenticate.CustomAuthentication',
+#     ),
+    
+# }
+
+
 REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'accounts.authenticate.CustomAuthentication',
-        # 'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
     ),
 }
-
-# REST_FRAMEWORK = {
-#     'DEFAULT_PERMISSION_CLASSES': (
-#         'rest_framework.permissions.IsAuthenticated',
-#     ),
-#     'DEFAULT_AUTHENTICATION_CLASSES': (
-#         'rest_framework.authentication.SessionAuthentication',
-#         'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
-#     ),
-# }
 # 이 부분이 포함된게 우리의 authenticate 인가?
 
 REST_USE_JWT = True
@@ -204,14 +210,10 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN': 'refresh_token',
 }
 
-# AUTHENTICATION_BACKENDS = (
-#     'django.contrib.auth.backends.ModelBackend',
-#     'allauth.account.auth_backends.AuthenticationBackend',
-# )
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None # username 필드 사용 x
+ACCOUNT_EMAIL_REQUIRED = True            # email 필드 사용 o
+ACCOUNT_USERNAME_REQUIRED = False        # username 필드 사용 x
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
 
-# SITE_ID = 1
 
-# ACCOUNT_LOGOUT_ON_GET = True
-
-# # 소셜 로그인 버튼 눌렀을 때 확인 페이지 스킵
-# SOCIALACCOUNT_LOGIN_ON_GET = True
+SITE_ID = 1
