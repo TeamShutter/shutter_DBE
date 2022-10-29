@@ -44,29 +44,10 @@ class PhotoView(APIView):
             like_count = len(Like.objects.filter(photo=photo))
             return Response({'photo_data': serializer.data, 'like_data': like_count}, status=status.HTTP_200_OK)
         except:
-<<<<<<< HEAD
             return Response({"error": "failed to get photo"},status=status.HTTP_400_BAD_REQUEST)
-=======
-            return Response({"error": "failed to get photo"}, status=status.HTTP_400_BAD_REQUEST)
->>>>>>> 9ed56a8a9c5546af68682568561751109e2f59c3
 
 
-class LikePhoto(APIView):
-    authentication_classes=[JWTAuthenticationSafe]
-    def get(self, request, photo_id):
-        try:
-            photo = Photo.objects.get(id=photo_id)
-            user = User.objects.get(id=request.headers['userid']) #request.headers 에서 가져올수 있나 지금?
-            like_list = photo.like_set.filter(user = user)
-            like = 0
-            if like_list.count() > 0:
-                photo.like_set.get(user=user).delete()
-            else :
-                Like.objects.create(user=user, photo=photo)
-                like += 1
-            return Response({'like' : like, 'success' : "like photo"}, status=status.HTTP_200_OK)
-        except:
-            return Response({"error": "failed to like photo"}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class LikePhotoView(APIView):
     authentication_classes=[JWTAuthenticationSafe]

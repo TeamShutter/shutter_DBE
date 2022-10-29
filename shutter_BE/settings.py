@@ -48,15 +48,16 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'photo',
-    # dj-rest-auth
-    'dj_rest_auth',
-    'dj_rest_auth.registration',
-    #allauth
-    'allauth',
-    'allauth.account', #이거 떄문에 에러뜨는데 이름 중복되는듯??
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.kakao',
-    'allauth.socialaccount.providers.google',
+    # # dj-rest-auth
+    # 'dj_rest_auth',
+    # 'dj_rest_auth.registration',
+    # #allauth
+    # 'allauth',
+    # 'allauth.account', #이거 떄문에 에러뜨는데 이름 중복되는듯??
+    # 'allauth.socialaccount',
+    # 'allauth.socialaccount.providers.kakao',
+    # 'allauth.socialaccount.providers.google',
+    # 'rest_frame.authtoken'
 ]
 
 MIDDLEWARE = [
@@ -175,7 +176,7 @@ AUTH_USER_MODEL = 'accounts.User'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'accounts.authenticate.CustomAuthentication',
-        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
+        # 'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
     ),
 }
 
@@ -203,14 +204,14 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN': 'refresh_token',
 }
 
-AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
-)
+# AUTHENTICATION_BACKENDS = (
+#     'django.contrib.auth.backends.ModelBackend',
+#     'allauth.account.auth_backends.AuthenticationBackend',
+# )
 
-SITE_ID = 1
+# SITE_ID = 1
 
-ACCOUNT_LOGOUT_ON_GET = True
+# ACCOUNT_LOGOUT_ON_GET = True
 
-# 소셜 로그인 버튼 눌렀을 때 확인 페이지 스킵
-SOCIALACCOUNT_LOGIN_ON_GET = True
+# # 소셜 로그인 버튼 눌렀을 때 확인 페이지 스킵
+# SOCIALACCOUNT_LOGIN_ON_GET = True
