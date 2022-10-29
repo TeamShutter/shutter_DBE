@@ -300,8 +300,6 @@ class StudioView(APIView):
         except:
             return Response({"error": "failed to get studio infos."},status=status.HTTP_400_BAD_REQUEST)
 
-<<<<<<< HEAD
-=======
 class AllStudioReview(APIView):
     authentication_classes=[JWTAuthenticationSafe]
     def get(self, request, studio_id):
@@ -362,4 +360,3 @@ class FollowStudio(APIView):
             return Response({'follow' : follow, 'success' : "follow studio"}, status=status.HTTP_200_OK)
         except:
             return Response({"error": "failed to follow studio"}, status=status.HTTP_400_BAD_REQUEST)
->>>>>>> 9ed56a8a9c5546af68682568561751109e2f59c3
