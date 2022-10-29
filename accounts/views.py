@@ -8,7 +8,9 @@ from accounts.authenticate import JWTAuthenticationSafe
 
 from accounts.models import User
 from .serializers import SignUpSerializer, LogInSerializer, LogOutSerializer, UserSerializer
-from django.contrib.contenttypes.models import ContentType
+
+
+
 
 class SignUpView(generics.GenericAPIView):
     authentication_classes = []
@@ -46,18 +48,7 @@ class UserGroupView(generics.GenericAPIView):
             return Response({'success': "user group assigned"}, status=status.HTTP_200_OK)
         except:
             return Response({"error": "failed to assign group"}, status=status.HTTP_400_BAD_REQUEST)
-            # try :
-            #     studio_group, created =  Group.objects.get_or_create(name="StudioUser")
-            #     normal_group, created =  Group.objects.get_or_create(name="NormalUser")
-            # except:
-            #     return Response({'error': 'failed to create groups'}, status=status.HTTP_400_BAD_REQUEST)
-            # try:
-            #     if request.data.get('group') == 'studio':
-            #         user.groups.add(studio_group)
-            #     else :
-            #         user.groups.add(normal_group)
-            # except:
-            #     return Response({'error': 'failed to assign groups'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class LogInView(generics.GenericAPIView):
     authentication_classes = []
@@ -67,7 +58,7 @@ class LogInView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         access_token = serializer.data["tokens"]["access"]
         refresh_token = serializer.data["tokens"]["refresh"]
-        data = { "msg" : "login success", "username": serializer.data["username"] }
+        data = { "msg" : "login success", "email": serializer.data["email"] }
         res = Response(data, status=status.HTTP_200_OK)
         res.set_cookie('access_token', value=access_token, httponly=True)
         res.set_cookie('refresh_token', value=refresh_token, httponly=True)
