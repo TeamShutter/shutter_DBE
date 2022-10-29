@@ -1,5 +1,5 @@
 from django.urls import path
-from account import views 
+from accounts import views 
 from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
 
 app_name = 'accounts'

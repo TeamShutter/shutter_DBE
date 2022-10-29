@@ -4,9 +4,9 @@ from django.http import JsonResponse
 from rest_framework import generics, status, permissions
 from rest_framework.views import APIView
 from django.contrib.auth.models import Group
-from account.authenticate import JWTAuthenticationSafe
+from accounts.authenticate import JWTAuthenticationSafe
 
-from account.models import User
+from accounts.models import User
 from .serializers import SignUpSerializer, LogInSerializer, LogOutSerializer, UserSerializer
 from django.contrib.contenttypes.models import ContentType
 
@@ -102,5 +102,4 @@ class LoadUserView(APIView):
                 {'error': 'Something went wrong when loading user'},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
-
 

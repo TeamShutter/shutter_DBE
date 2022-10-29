@@ -2,7 +2,7 @@ import json
 from tempfile import TemporaryFile
 from django.http import JsonResponse
 from django.shortcuts import render
-from account.models import User
+from accounts.models import User
 import reservation
 from reservation import serializers
 from reservation.serializers import ReservationSerializer

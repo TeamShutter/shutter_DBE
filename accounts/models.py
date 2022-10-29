@@ -11,7 +11,7 @@ class User(AbstractUser):
 
 
     def __str__(self):
-        return(f'{self.id}')
+        return(f'{self.name}')
 
     def tokens(self):
         refresh = RefreshToken.for_user(self)
