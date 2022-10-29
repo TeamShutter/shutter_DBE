@@ -9,5 +9,6 @@ urlpatterns = [
     path('logout/', views.LogOutView.as_view(), name='logout'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
-    # path('user/', views.LoadUserView.as_view(), name='load_user'),
+    path('user/', views.LoadUserView.as_view(), name='load_user'),
+    path('user/<int:user_id>/group/', views.UserGroupView.as_view(), name= "user_group_assign")
 ]
