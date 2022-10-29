@@ -285,7 +285,7 @@ class AllStudioView(APIView):
             except:
                 return Response({"error": "failed to get town's studios"},status=status.HTTP_400_BAD_REQUEST)
 
-                
+
 class StudioView(APIView):
     authentication_classes=[JWTAuthenticationSafe]
     def get(self, request, studio_id):
@@ -298,3 +298,4 @@ class StudioView(APIView):
             return Response({"studio_data" : studio_serializer.data, "photo_data" : photo_serializer.data, "success": "get studio"})
         except:
             return Response({"error": "failed to get studio infos."},status=status.HTTP_400_BAD_REQUEST)
+

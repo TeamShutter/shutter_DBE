@@ -31,10 +31,13 @@ class AllPhotoView(APIView):
 class PhotoView(APIView):
     authentication_classes=[JWTAuthenticationSafe]
     def get(self, request, photo_id):
-        photo = Photo.objects.get(id = photo_id)
-        serializer = PhotoSerializer(photo)
-        like_count = len(Like.objects.filter(photo=photo))
-        return Response({'photo_data': serializer.data, 'like_data': like_count}, status=status.HTTP_200_OK)
+        try:
+            photo = Photo.objects.get(id = photo_id)
+            serializer = PhotoSerializer(photo)
+            like_count = len(Like.objects.filter(photo=photo))
+            return Response({'photo_data': serializer.data, 'like_data': like_count}, status=status.HTTP_200_OK)
+        except:
+            return Response({"error": "failed to get photo"},status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET'])
@@ -52,4 +55,20 @@ def LikePhoto(request, pid):
         Like.objects.create(user=user, photo=photo)
         like += 1
     return Response({'like' : like})
+
+class LikePhotoView(APIView):
+    authentication_classes=[JWTAuthenticationSafe]
+    def post(self, request, photo_id):  
+        try:
+            photo = Photo.objects.get(id=photo_id)
+            user = request.user
+            user_like_list = photo.like_set.filter(user = user)
+
+            if user_like_list.count() > 0:
+                photo.like_set.get(user=user).delete()
+            else:
+                Like.objects.create(user=user, photo=photo)
+            return Response({"success": "like action is completed"}, status=status.HTTP_200_OK)
+        except:
+            return Response({"error": "like failed.. "}, status=status.HTTP_400_BAD_REQUEST)
 
