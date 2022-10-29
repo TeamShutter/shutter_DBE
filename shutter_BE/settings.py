@@ -57,7 +57,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'photo',
-
+    'dj_rest_auth',
+    'dj_rest_auth.registration',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -214,6 +215,3 @@ ACCOUNT_USER_MODEL_USERNAME_FIELD = None # username 필드 사용 x
 ACCOUNT_EMAIL_REQUIRED = True            # email 필드 사용 o
 ACCOUNT_USERNAME_REQUIRED = False        # username 필드 사용 x
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
-
-
-SITE_ID = 1

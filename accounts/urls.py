@@ -11,7 +11,7 @@ urlpatterns = [
     path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     path('user/', views.LoadUserView.as_view(), name='load_user'),
     path('user/<int:user_id>/group/', views.UserGroupView.as_view(), name= "user_group_assign"),
-    
+
     path('kakao/login/', socialviews.kakao_login, name='kakao_login'),
     path('kakao/login/callback/', socialviews.kakao_callback, name='kakao_callback'),
     path('kakao/login/finish/', socialviews.KakaoLoginView.as_view(), name='kakao_login_todjango'),
