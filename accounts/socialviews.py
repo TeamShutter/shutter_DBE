@@ -10,6 +10,8 @@ from django.http import JsonResponse
 import requests
 from rest_framework import status
 from json.decoder import JSONDecodeError
+
+from accounts.serializers import UserSerializer
 state = getattr(settings, 'STATE')
 
 BASE_URL = 'http://127.0.0.1:8000/'
@@ -33,16 +35,14 @@ def kakao_callback(request):
     if error is not None:
         raise JSONDecodeError(error)
     access_token = token_req_json.get("access_token")
-    print(access_token + '\n')
+    print(access_token)
     """
     Email Request
     """
     profile_request = requests.get(
         "https://kapi.kakao.com/v2/user/me", headers={"Authorization": f"Bearer {access_token}"})
     profile_json = profile_request.json()
-    print(profile_json)
     kakao_account = profile_json.get('kakao_account')
-    print(kakao_account)
     """
     kakao_account에서 이메일 외에
     카카오톡 프로필 이미지, 배경 이미지 url 가져올 수 있음
@@ -50,7 +50,6 @@ def kakao_callback(request):
     """
     # print(kakao_account)
     email = kakao_account.get('email')
-    print(email)
     """
     Signup or Signin Request
     """
@@ -71,22 +70,29 @@ def kakao_callback(request):
         if accept_status != 200:
             return JsonResponse({'err_msg': 'failed to signin'}, status=accept_status)
         accept_json = accept.json()
-        accept_json.pop('user', None)
-        return JsonResponse(accept_json)
+        # accept_json.pop('user', None)
+        accept_json['user']['username'] = email.split('@')[0]
+        serializer = UserSerializer(user)
+        print(serializer.data)
+        res = JsonResponse(accept_json)
+        res.set_cookie('access_token', value=accept_json['access_token'], httponly=True)
+        res.set_cookie('refresh_token', value=accept_json['refresh_token'], httponly=True)
+        return res
     except User.DoesNotExist:
         # 기존에 가입된 유저가 없으면 새로 가입
         data = {'access_token': access_token, 'code': code}
-        print(data)
         accept = requests.post(
             f"{BASE_URL}accounts/kakao/login/finish/", data=data)
-        print(accept)
         accept_status = accept.status_code
         if accept_status != 200:
             return JsonResponse({'err_msg': 'failed to signup'}, status=accept_status)
         # user의 pk, email, first name, last name과 Access Token, Refresh token 가져옴
         accept_json = accept.json()
-        accept_json.pop('user', None)
-        return JsonResponse(accept_json)
+        # accept_json.pop('user', None)
+        # accept_json.
+        res = JsonResponse(accept_json)
+        return res
+
 class KakaoLoginView(SocialLoginView):
     adapter_class = kakao_view.KakaoOAuth2Adapter
     client_class = OAuth2Client
