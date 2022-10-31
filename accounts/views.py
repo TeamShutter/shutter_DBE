@@ -45,7 +45,7 @@ class LogInView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         access_token = serializer.data["tokens"]["access"]
         refresh_token = serializer.data["tokens"]["refresh"]
-        data = { "msg" : "login success", "email": serializer.data["email"] }
+        data = { "msg" : "login success", "username": serializer.data["username"] }
         res = Response(data, status=status.HTTP_200_OK)
         res.set_cookie('access_token', value=access_token, httponly=True)
         res.set_cookie('refresh_token', value=refresh_token, httponly=True)
