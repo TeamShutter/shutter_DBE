@@ -221,3 +221,5 @@ SIMPLE_JWT = {
 # ACCOUNTS_EMAIL_REQUIRED = True            # email 필드 사용 o
 # ACCOUNTS_USERNAME_REQUIRED = False        # username 필드 사용 x
 # ACCOUNTS_AUTHENTICATION_METHOD = 'email'
+
+SITE_ID = 1
