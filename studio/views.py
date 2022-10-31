@@ -315,7 +315,7 @@ class AllStudioReview(APIView):
         try:
             content = request.data.get('content')
             rating = request.data.get('rating')
-            user = User.objects.get(id=request.headers['userid']) # userid 받는 방법이 왜 다른거지??
+            user = request.user # userid 받는 방법이 왜 다른거지??
             review = Review.objects.create(studio_id = studio_id, content=content, author=user, rating=rating)
             serializer = ReviewSerializer(review)
             return Response({"data" : serializer.data, "success" : "post studio review"})
@@ -349,7 +349,7 @@ class FollowStudio(APIView):
     def get(self, request, studio_id):
         try:
             studio = Studio.objects.get(id=studio_id)
-            user = User.objects.get(id=request.headers['userid'])
+            user = request.user
             follow_list = studio.follow_set.filter(user = user)
             follow = 0
             if follow_list.count() > 0:

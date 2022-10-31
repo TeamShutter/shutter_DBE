@@ -1,3 +1,4 @@
+from enum import unique
 from pyexpat import model
 from rest_framework import serializers
 from .models import User
@@ -10,7 +11,7 @@ class SignUpSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=68, min_length=8, write_only=True)
     class Meta:
         model = User
-        fields = ['email', 'password']
+        fields = ['username','email', 'password']
     
     def validate_name(self, attrs):
         email = attrs.get('email', '')
@@ -70,4 +71,4 @@ class LogOutSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['email', 'groups']
+        fields = ['id','email', 'groups']
