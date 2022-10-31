@@ -272,7 +272,10 @@ class AllStudioView(APIView):
     def get(self, request):
         if not request.data.get('town'):
             try:
-                studios = Studio.objects.all()
+                try:
+                    studios = Studio.objects.all()
+                except:
+                    return Response({"error": "no!"}, status=status.HTTP_400_BAD_REQUEST)
                 serializer = StudioSerializer(studios, many=True)
                 return Response({"data" : serializer.data, "success": "get all studios"})
             except:
