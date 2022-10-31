@@ -32,6 +32,8 @@ environ.Env.read_env(
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('DJANGO_KEY')
 KAKAO_REST_API_KEY = os.environ.get('KAKAO_KEY')
+SOCIAL_AUTH_GOOGLE_CLIENT_ID = os.environ.get('SOCIAL_AUTH_GOOGLE_CLIENT_ID')
+SOCIAL_AUTH_GOOGLE_SECRET = os.environ.get('SOCIAL_AUTH_GOOGLE_SECRET')
 STATE = os.environ.get('STATE')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -53,15 +55,19 @@ INSTALLED_APPS = [
     'studio',
     'accounts',
     'reservation',
+    'photo',
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
-    'photo',
-
+    # dj-rest-auth
+    'dj_rest_auth',
+    'dj_rest_auth.registration',
+    # django-allauth
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.kakao',
+    'allauth.socialaccount.providers.google',
     'rest_framework.authtoken',
 ]
 
@@ -187,12 +193,13 @@ AUTH_USER_MODEL = 'accounts.User'
 
 
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-    ),
+    # 'DEFAULT_PERMISSION_CLASSES': (
+    #     'rest_framework.permissions.IsAuthenticated',
+    # ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.SessionAuthentication',
         'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
     ),
 }
 # 이 부분이 포함된게 우리의 authenticate 인가?
@@ -210,10 +217,7 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN': 'refresh_token',
 }
 
-ACCOUNT_USER_MODEL_USERNAME_FIELD = None # username 필드 사용 x
-ACCOUNT_EMAIL_REQUIRED = True            # email 필드 사용 o
-ACCOUNT_USERNAME_REQUIRED = False        # username 필드 사용 x
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
-
-
-SITE_ID = 1
+# ACCOUNTS_USER_MODEL_USERNAME_FIELD = None # username 필드 사용 x
+# ACCOUNTS_EMAIL_REQUIRED = True            # email 필드 사용 o
+# ACCOUNTS_USERNAME_REQUIRED = False        # username 필드 사용 x
+# ACCOUNTS_AUTHENTICATION_METHOD = 'email'
