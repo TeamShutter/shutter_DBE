@@ -32,6 +32,8 @@ environ.Env.read_env(
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('DJANGO_KEY')
 KAKAO_REST_API_KEY = os.environ.get('KAKAO_KEY')
+SOCIAL_AUTH_GOOGLE_CLIENT_ID = os.environ.get('SOCIAL_AUTH_GOOGLE_CLIENT_ID')
+SOCIAL_AUTH_GOOGLE_SECRET = os.environ.get('SOCIAL_AUTH_GOOGLE_SECRET')
 STATE = os.environ.get('STATE')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -53,16 +55,19 @@ INSTALLED_APPS = [
     'studio',
     'accounts',
     'reservation',
+    'photo',
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
-    'photo',
+    # dj-rest-auth
     'dj_rest_auth',
     'dj_rest_auth.registration',
+    # django-allauth
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.kakao',
+    'allauth.socialaccount.providers.google',
     'rest_framework.authtoken',
 ]
 

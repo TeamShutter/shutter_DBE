@@ -15,5 +15,8 @@ urlpatterns = [
     path('kakao/login/', socialviews.kakao_login, name='kakao_login'),
     path('kakao/login/callback/', socialviews.kakao_callback, name='kakao_callback'),
     path('kakao/login/finish/', socialviews.KakaoLoginView.as_view(), name='kakao_login_todjango'),
+    path('google/login/', socialviews.google_login, name='google_login'),
+    path('google/login/callback/', socialviews.google_callback, name='google_callback'),
+    path('google/login/finish/', socialviews.GoogleLoginView.as_view(), name='google_login_todjango'),
 
 ]
