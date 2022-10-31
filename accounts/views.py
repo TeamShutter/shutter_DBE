@@ -4,19 +4,50 @@ from django.http import JsonResponse
 from rest_framework import generics, status, permissions
 from rest_framework.views import APIView
 from django.contrib.auth.models import Group
+from accounts.authenticate import JWTAuthenticationSafe
+
+from accounts.models import User
 from .serializers import SignUpSerializer, LogInSerializer, LogOutSerializer, UserSerializer
-from django.contrib.contenttypes.models import ContentType
+
+
+
 
 class SignUpView(generics.GenericAPIView):
     authentication_classes = []
     serializer_class = SignUpSerializer
+    
     def post(self, request):
-        user = request.data
-        serializer = self.serializer_class(data=user)
-        serializer.is_valid(raise_exception = True)
-        serializer.save()
-        data = { "msg": "user created" }
-        return Response(data, status=status.HTTP_201_CREATED)
+        try: 
+
+            try: 
+                user_info = request.data
+            except:
+                return Response({'error': 'failed to get data'}, status=status.HTTP_400_BAD_REQUEST)
+
+            serializer = self.serializer_class(data=user_info)
+            serializer.is_valid(raise_exception = True)
+            serializer.save()
+
+            return Response({ "msg": "user created" }, status=status.HTTP_201_CREATED)
+        except:
+            return Response({'error': 'failed to signup user'}, status=status.HTTP_400_BAD_REQUEST)
+
+class UserGroupView(generics.GenericAPIView):
+    authentication_classes=[JWTAuthenticationSafe]
+    def post(self, request, user_id):
+        try:
+            user = User.objects.get(id=user_id)
+            studio_group, created =  Group.objects.get_or_create(name="StudioUser")
+            normal_group, created =  Group.objects.get_or_create(name="NormalUser")
+            group = request.data.get('group')
+            
+            if group == 'studio':
+                user.groups.add(studio_group)
+            else :
+                user.groups.add(normal_group)
+            return Response({'success': "user group assigned"}, status=status.HTTP_200_OK)
+        except:
+            return Response({"error": "failed to assign group"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LogInView(generics.GenericAPIView):
@@ -27,7 +58,7 @@ class LogInView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         access_token = serializer.data["tokens"]["access"]
         refresh_token = serializer.data["tokens"]["refresh"]
-        data = { "msg" : "login success", "username": serializer.data["username"] }
+        data = { "msg" : "login success", "email": serializer.data["email"] }
         res = Response(data, status=status.HTTP_200_OK)
         res.set_cookie('access_token', value=access_token, httponly=True)
         res.set_cookie('refresh_token', value=refresh_token, httponly=True)
@@ -50,10 +81,8 @@ class LogOutView(generics.GenericAPIView):
 class LoadUserView(APIView):
     def get(self, request):
         try:
-            user_id = request.user
-            user_id.groups.add(studio_group)
-            user = UserSerializer(user_id)
-            
+            user = request.user
+            user = UserSerializer(user)
             return Response(
                 {'user': user.data},
                 status=status.HTTP_200_OK
@@ -65,7 +94,3 @@ class LoadUserView(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
-class UserGroupView(APIView):
-    studio_group, created =  Group.objects.get_or_create(name="Studio")
-
-    # content_type = ContentType.objects.get_for_model(Reservatio) 

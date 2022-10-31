@@ -2,11 +2,12 @@ from django.http import JsonResponse
 from django.views.generic import View
 from django.shortcuts import render
 
-from account.authenticate import JWTAuthenticationSafe
+from accounts.authenticate import JWTAuthenticationSafe
+from accounts.models import User
 from photo.models import Photo
 from photo.serializers import PhotoSerializer
-from .models import AssignedTime, OpenedTime, Photographer, Place, Studio, Product
-from .serializers import OpenedTimeSerializer, PhotographerSerializer, PlaceSerializer, StudioSerializer, ProductSerializer, AssignedTimeSerializer
+from .models import AssignedTime, Follow, OpenedTime, Photographer, Place, Review, Studio, Product
+from .serializers import OpenedTimeSerializer, PhotographerSerializer, PlaceSerializer, ReviewSerializer, StudioSerializer, ProductSerializer, AssignedTimeSerializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
@@ -285,7 +286,7 @@ class AllStudioView(APIView):
             except:
                 return Response({"error": "failed to get town's studios"},status=status.HTTP_400_BAD_REQUEST)
 
-                
+
 class StudioView(APIView):
     authentication_classes=[JWTAuthenticationSafe]
     def get(self, request, studio_id):
@@ -298,3 +299,64 @@ class StudioView(APIView):
             return Response({"studio_data" : studio_serializer.data, "photo_data" : photo_serializer.data, "success": "get studio"})
         except:
             return Response({"error": "failed to get studio infos."},status=status.HTTP_400_BAD_REQUEST)
+
+class AllStudioReview(APIView):
+    authentication_classes=[JWTAuthenticationSafe]
+    def get(self, request, studio_id):
+        try:
+            studio = Studio.objects.get(id=studio_id)
+            review = Review.objects.filter(studio=studio)
+            serializer = ReviewSerializer(review, many=True)
+            return Response({"data" : serializer.data, "success" : "get studio review"})
+        except:
+            return Response({"error": "failed to get studio review"},status=status.HTTP_400_BAD_REQUEST)
+    
+    def post(self, request, studio_id):
+        try:
+            content = request.data.get('content')
+            rating = request.data.get('rating')
+            user = User.objects.get(id=request.headers['userid']) # userid 받는 방법이 왜 다른거지??
+            review = Review.objects.create(studio_id = studio_id, content=content, author=user, rating=rating)
+            serializer = ReviewSerializer(review)
+            return Response({"data" : serializer.data, "success" : "post studio review"})
+        except:
+            return Response({"error": "failed to post studio review"},status=status.HTTP_400_BAD_REQUEST)
+
+class StudioReview(APIView):
+    authentication_classes=[JWTAuthenticationSafe]
+    def patch(self, request, studio_id, id):
+        try:
+            review = Review.objects.get(id=id)
+            serializer = ReviewSerializer(review, data=request.data, partial=True) 
+            if serializer.is_valid():
+                serializer.save()
+                return Response({"data": serializer.data, "success" : "patch studio review"})
+            return Response({"error" : "patch studio review invalid form"}, status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({"error": "failed to patch studio review"},status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, studio_id, id):
+        try:
+            review = Review.objects.get(id=id)
+            review.delete()
+            return Response({"success" : "delete studio review"}, status=status.HTTP_200_OK)
+        except:
+            return Response({"error": "failed to delete studio review"},status=status.HTTP_400_BAD_REQUEST)
+    
+class FollowStudio(APIView):
+    authentication_classes=[JWTAuthenticationSafe]
+    
+    def get(self, request, studio_id):
+        try:
+            studio = Studio.objects.get(id=studio_id)
+            user = User.objects.get(id=request.headers['userid'])
+            follow_list = studio.follow_set.filter(user = user)
+            follow = 0
+            if follow_list.count() > 0:
+                studio.like_set.get(user=user).delete()
+            else :
+                Follow.objects.create(user=user, studio=studio)
+                follow += 1
+            return Response({'follow' : follow, 'success' : "follow studio"}, status=status.HTTP_200_OK)
+        except:
+            return Response({"error": "failed to follow studio"}, status=status.HTTP_400_BAD_REQUEST)

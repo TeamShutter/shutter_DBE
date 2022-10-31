@@ -2,7 +2,7 @@ from datetime import datetime
 from email.policy import default
 from django.db import models
 from django.utils import timezone
-from account.models import User
+from accounts.models import User
 # Create your models here.
 class Studio(models.Model):
     PHOTOSHOP_CHOICES = ((1, '1'), (2, '2'), (3, '3'))

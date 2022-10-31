@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import AssignedTime, Photographer, Place, Studio, Product, OpenedTime, StudioImage
+from .models import AssignedTime, Photographer, Place, Review, Studio, Product, OpenedTime, StudioImage
 
 #  description = models.TextField(default='description')
     
@@ -20,7 +20,7 @@ class StudioSerializer(serializers.ModelSerializer):
     studio_images = StudioImageSerializer(many=True)
     class Meta:
         model = Studio
-        fields = ('id', 'name', 'thumbnail' ,'studio_images', 'phone', 'naver_link','instagram_link','open_time', 'close_time', 'address', 'town', 'follow_users')
+        fields = ('id', 'name', 'thumbnail' ,'studio_images', 'phone', 'na','instagram_link','open_time', 'close_time', 'address', 'town', 'follow_users')
 
 
 
@@ -61,3 +61,8 @@ class AssignedTimeSerializer(serializers.Serializer):
         model = AssignedTime
         fields = ('studio', 'product', 'is_absence')
 
+class ReviewSerializer(serializers.ModelSerializer):
+    # author = UserSerializer(read_only=True)
+    class Meta:
+        model = Review
+        fields = ('id', 'author', 'content', 'studio', 'rating', 'created_at')
