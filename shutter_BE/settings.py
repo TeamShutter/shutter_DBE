@@ -196,6 +196,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.SessionAuthentication',
         'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
     ),
 }
 # 이 부분이 포함된게 우리의 authenticate 인가?
@@ -213,10 +214,7 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN': 'refresh_token',
 }
 
-ACCOUNT_USER_MODEL_USERNAME_FIELD = None # username 필드 사용 x
-ACCOUNT_EMAIL_REQUIRED = True            # email 필드 사용 o
-ACCOUNT_USERNAME_REQUIRED = False        # username 필드 사용 x
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
-
-
-# SITE_ID = 1
+# ACCOUNTS_USER_MODEL_USERNAME_FIELD = None # username 필드 사용 x
+# ACCOUNTS_EMAIL_REQUIRED = True            # email 필드 사용 o
+# ACCOUNTS_USERNAME_REQUIRED = False        # username 필드 사용 x
+# ACCOUNTS_AUTHENTICATION_METHOD = 'email'
