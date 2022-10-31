@@ -29,7 +29,7 @@ class LogInSerializer(serializers.ModelSerializer):
     tokens = serializers.SerializerMethodField()
 
     def get_tokens(self, obj):
-        user =  User.objects.get(username=obj['email'])
+        user =  User.objects.get(username=obj['username'])
         return {
             'refresh': user.tokens()['refresh'],
             'access': user.tokens()['access']
@@ -37,12 +37,12 @@ class LogInSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['password', 'email', 'tokens']
+        fields = ['username','password', 'email', 'tokens']
     
     def validate(self, attrs):
-        email = attrs.get('email', '')
+        username = attrs.get('username', '')
         password = attrs.get('password', '')
-        user = auth.authenticate(email=email, password=password)
+        user = auth.authenticate(username=username, password=password)
 
         if not user:
             raise AuthenticationFailed('invalid credentials, try again')
@@ -50,7 +50,7 @@ class LogInSerializer(serializers.ModelSerializer):
             raise AuthenticationFailed('user not active')
 
         return {
-            'email': user.email,
+            'username': user.username,
             'tokens': user.tokens
         }
 
