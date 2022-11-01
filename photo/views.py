@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 
 from django.contrib.auth.models import User
+from accounts.permissions import StudioReadOnlyUserAll
 from studio.models import Studio
 from .models import Photo, Like
 from .serializers import PhotoSerializer
@@ -50,6 +51,7 @@ class PhotoView(APIView):
 
 
 class LikePhotoView(APIView):
+    permission_classes = [StudioReadOnlyUserAll]
     authentication_classes=[JWTAuthenticationSafe]
     def post(self, request, photo_id):  
         try:

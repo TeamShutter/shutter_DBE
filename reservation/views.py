@@ -3,6 +3,7 @@ from tempfile import TemporaryFile
 from django.http import JsonResponse
 from django.shortcuts import render
 from accounts.models import User
+from accounts.permissions import UserReadOnlyStudioAll
 import reservation
 from reservation import serializers
 from reservation.serializers import ReservationSerializer
@@ -16,7 +17,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 
 
-class AllReservationView(APIView):
+class AllStudioReservationView(APIView):
+    permission_classes = [UserReadOnlyStudioAll]
     def get(self, request, studio_id): 
         try:
             studio = Studio.objects.get(id=studio_id)
@@ -41,8 +43,8 @@ class AllReservationView(APIView):
     
     def post(self, request, studio_id):
         try:
-            user = User.objects.get(id=request.data.get('photographer_id'))
-            assigned_time = AssignedTime.objects.get(id=request.data.get('assignedtime_id'))
+            user = User.objects.get(id=request.data.get('photographer_id')) # 이거 포토그래퍼 아이디를 user에서 왜 가져오는건지 모르겠음! 수정해야할 듯.
+            assigned_time = AssignedTime.objects.get(id=request.data.get('assignedtime_id')) 
             description = request.data.get('description')
             reservation = Reservation.objects.create(user=user, assigned_time=assigned_time, description=description)
             reservation.assigned_time.update_available()
@@ -52,7 +54,8 @@ class AllReservationView(APIView):
         except:
             return Response({'error' : 'post reservation'}, status=status.HTTP_400_BAD_REQUEST)      
 
-class ReservationView(APIView):
+class StudioReservationView(APIView):
+    permission_classes = [UserReadOnlyStudioAll]
     def get(self, request, id, studio_id):
         try:
             reservation = Reservation.objects.get(id=id)
