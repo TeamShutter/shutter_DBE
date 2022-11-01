@@ -222,4 +222,4 @@ SIMPLE_JWT = {
 # ACCOUNTS_USERNAME_REQUIRED = False        # username 필드 사용 x
 # ACCOUNTS_AUTHENTICATION_METHOD = 'email'
 
-SITE_ID = 1
+# SITE_ID = 1
