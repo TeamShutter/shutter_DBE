@@ -38,7 +38,7 @@ STATE = os.environ.get('STATE')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['172.31.44.123', 'api.takeshutter.co.kr']
 
 
 # Application definition
@@ -84,9 +84,8 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://takeshutter.co.kr:3000",
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
+    "http://takeshutter.co.kr",
+    "https://takeshutter.co.kr",
 ]
 CORS_ALLOW_HEADERS = [
     "accept",
