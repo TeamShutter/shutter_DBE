@@ -66,6 +66,7 @@ class LogOutView(generics.GenericAPIView):
         return res
 
 class LoadUserView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     def get(self, request):
         try:
             user = request.user
@@ -83,6 +84,7 @@ class LoadUserView(APIView):
 
 
 class UserGroupView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAdminUser]
     authentication_classes=[JWTAuthenticationSafe]
     def post(self, request, user_id):
         try:
