@@ -86,6 +86,7 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "http://takeshutter.co.kr",
     "https://takeshutter.co.kr",
+    "http://localhost:3000",
 ]
 CORS_ALLOW_HEADERS = [
     "accept",
@@ -222,4 +223,4 @@ SIMPLE_JWT = {
 # ACCOUNTS_USERNAME_REQUIRED = False        # username 필드 사용 x
 # ACCOUNTS_AUTHENTICATION_METHOD = 'email'
 
-# SITE_ID = 1
+SITE_ID = 1
