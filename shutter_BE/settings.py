@@ -38,7 +38,7 @@ STATE = os.environ.get('STATE')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
 
 # Application definition
@@ -72,6 +72,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "shutter_BE.middleware.HealthCheckMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -83,9 +84,9 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://takeshutter.co.kr:3000",
+    "http://takeshutter.co.kr",
+    "https://takeshutter.co.kr",
     "http://localhost:3000",
-    "http://127.0.0.1:3000",
 ]
 CORS_ALLOW_HEADERS = [
     "accept",
@@ -193,9 +194,6 @@ AUTH_USER_MODEL = 'accounts.User'
 
 
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.AllowAny',
-    ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.SessionAuthentication',
         'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
@@ -217,5 +215,14 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN': 'refresh_token',
 }
 
+<<<<<<< HEAD
 
 CSRF_TRUSTED_ORIGINS = ['https://*.api.takeshutter.co.kr/','http://*.127.0.0.1']
+=======
+# ACCOUNTS_USER_MODEL_USERNAME_FIELD = None # username 필드 사용 x
+# ACCOUNTS_EMAIL_REQUIRED = True            # email 필드 사용 o
+# ACCOUNTS_USERNAME_REQUIRED = False        # username 필드 사용 x
+# ACCOUNTS_AUTHENTICATION_METHOD = 'email'
+
+SITE_ID = 1
+>>>>>>> 69fd987aef1c50a59488a4ad0de91c24f70bbb3a
