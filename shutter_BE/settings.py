@@ -38,7 +38,7 @@ STATE = os.environ.get('STATE')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", '172.31.44.123', 'api.takeshutter.co.kr']
 
 
 # Application definition
@@ -215,14 +215,5 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN': 'refresh_token',
 }
 
-<<<<<<< HEAD
 
 CSRF_TRUSTED_ORIGINS = ['https://*.api.takeshutter.co.kr/','http://*.127.0.0.1']
-=======
-# ACCOUNTS_USER_MODEL_USERNAME_FIELD = None # username 필드 사용 x
-# ACCOUNTS_EMAIL_REQUIRED = True            # email 필드 사용 o
-# ACCOUNTS_USERNAME_REQUIRED = False        # username 필드 사용 x
-# ACCOUNTS_AUTHENTICATION_METHOD = 'email'
-
-SITE_ID = 1
->>>>>>> 69fd987aef1c50a59488a4ad0de91c24f70bbb3a
