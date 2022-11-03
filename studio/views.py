@@ -391,7 +391,6 @@ class TownView(APIView):
             for i in range(len(studio)):
                 if Studio.objects.values()[i]['town'] not in town:
                     town.append(Studio.objects.values()[i]['town'])
-            print(town)
             return Response({'data' : town})
         except:
             return Response({"error": "failed to get town"}, status=status.HTTP_400_BAD_REQUEST)
