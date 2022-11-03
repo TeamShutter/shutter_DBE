@@ -255,10 +255,11 @@ class PhotographerView(APIView):
 
 class AllAssignedTimeView(APIView):
     permission_classes = [UserReadOnlyStudioAll]
-    def get(self, request): 
+    def get(self, request, studio_id): 
         try:
-            photographer = Photographer.objects.get(id=request.GET.get('photographer_id'))
-            assigned_time = AssignedTime.objects.filter(photographer=photographer)
+            studio = Studio.objects.get(id=studio_id)
+            opened_time = OpenedTime.objects.filter(studio=studio)
+            assigned_time = AssignedTime.objects.filter(opened_time__in=opened_time)
             serializer = AssignedTimeSerializer(assigned_time, many=True)
             return Response(serializer.data)
         
