@@ -4,6 +4,7 @@ from django.shortcuts import render
 
 from accounts.authenticate import JWTAuthenticationSafe
 from accounts.models import User
+from accounts.permissions import StudioReadOnlyUserAll, UserReadOnlyStudioAll
 from photo.models import Photo
 from photo.serializers import PhotoSerializer
 from .models import AssignedTime, Follow, OpenedTime, Photographer, Place, Review, Studio, Product
@@ -16,6 +17,7 @@ import json
 
 
 class AllProductView(APIView):
+    permission_classes = [UserReadOnlyStudioAll]
     def get(self, request, studio_id):
         try:
             studio = Studio.objects.get(id=studio_id)
@@ -41,6 +43,7 @@ class AllProductView(APIView):
             return Response({"error" : "post product"}, status=status.HTTP_400_BAD_REQUEST)
 
 class ProductView(APIView):
+    permission_classes = [UserReadOnlyStudioAll]
     # permission_classes = []  이거 어떻게 쓰는지 공부해봐야할듯-> 어떤 경우는 유저가 필요하고 어떤경우는 필요하지 않을텐데..
     def get(self, request, id, studio_id):
         try:
@@ -76,6 +79,7 @@ class ProductView(APIView):
 
 
 class AllPlaceView(APIView):
+    permission_classes = [UserReadOnlyStudioAll]
     def get(self, request, studio_id):
         try:
             studio = Studio.objects.get(id=studio_id)
@@ -100,6 +104,7 @@ class AllPlaceView(APIView):
             return Response({"error" : "post place"}, status=status.HTTP_400_BAD_REQUEST)
 
 class PlaceView(APIView):
+    permission_classes = [UserReadOnlyStudioAll]
     def get(self, request, id, studio_id):
         try:
             place = Place.objects.get(id=id)
@@ -132,6 +137,7 @@ class PlaceView(APIView):
             return Response({"error" : "delete place"}, status=status.HTTP_400_BAD_REQUEST)
 
 class AllOpenedTimeView(APIView):
+    permission_classes = [UserReadOnlyStudioAll]
     def get(self, request):
         try:
             studio = Studio.objects.get(id=request.GET.get('studio_id'))
@@ -156,6 +162,7 @@ class AllOpenedTimeView(APIView):
             return Response({"error" : "post opened_time"}, status=status.HTTP_400_BAD_REQUEST)
 
 class OpenedTimeView(APIView):
+    permission_classes = [UserReadOnlyStudioAll]
     def get(self, request, id):
         try:
             opened_time = OpenedTime.objects.get(id=id)
@@ -190,6 +197,7 @@ class OpenedTimeView(APIView):
 
             
 class AllPhotographerView(APIView):
+    permission_classes = [UserReadOnlyStudioAll]
     def get(self, request, studio_id):
         try:
             studio = Studio.objects.get(id=studio_id)
@@ -212,6 +220,7 @@ class AllPhotographerView(APIView):
             return Response({"error" : "post photographer"}, status=status.HTTP_400_BAD_REQUEST)
 
 class PhotographerView(APIView):
+    permission_classes = [UserReadOnlyStudioAll]
     def get(self, request, id, studio_id):
         try:
             photographer = Photographer.objects.get(id=id)
@@ -245,10 +254,12 @@ class PhotographerView(APIView):
 
 
 class AllAssignedTimeView(APIView):
-    def get(self, request): 
+    permission_classes = [UserReadOnlyStudioAll]
+    def get(self, request, studio_id): 
         try:
-            photographer = Photographer.objects.get(id=request.GET.get('photographer_id'))
-            assigned_time = AssignedTime.objects.filter(photographer=photographer)
+            studio = Studio.objects.get(id=studio_id)
+            opened_time = OpenedTime.objects.filter(studio=studio)
+            assigned_time = AssignedTime.objects.filter(opened_time__in=opened_time)
             serializer = AssignedTimeSerializer(assigned_time, many=True)
             return Response(serializer.data)
         
@@ -304,6 +315,7 @@ class StudioView(APIView):
             return Response({"error": "failed to get studio infos."},status=status.HTTP_400_BAD_REQUEST)
 
 class AllStudioReview(APIView):
+    permission_classes = [StudioReadOnlyUserAll]
     authentication_classes=[JWTAuthenticationSafe]
     def get(self, request, studio_id):
         try:
@@ -326,10 +338,14 @@ class AllStudioReview(APIView):
             return Response({"error": "failed to post studio review"},status=status.HTTP_400_BAD_REQUEST)
 
 class StudioReview(APIView):
+    permission_classes = [StudioReadOnlyUserAll]
     authentication_classes=[JWTAuthenticationSafe]
     def patch(self, request, studio_id, id):
         try:
             review = Review.objects.get(id=id)
+            # review.author 이런식으로 object foreignkey 갖고오면 object type
+            if review.author != request.user:
+                return Response ({"error": "not author user"}, status=status.HTTP_401_UNAUTHORIZED)
             serializer = ReviewSerializer(review, data=request.data, partial=True) 
             if serializer.is_valid():
                 serializer.save()
@@ -347,9 +363,10 @@ class StudioReview(APIView):
             return Response({"error": "failed to delete studio review"},status=status.HTTP_400_BAD_REQUEST)
     
 class FollowStudio(APIView):
+    permission_classes = [StudioReadOnlyUserAll]
     authentication_classes=[JWTAuthenticationSafe]
     
-    def get(self, request, studio_id):
+    def post(self, request, studio_id):
         try:
             studio = Studio.objects.get(id=studio_id)
             user = request.user

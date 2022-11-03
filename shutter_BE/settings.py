@@ -72,6 +72,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "shutter_BE.middleware.HealthCheckMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -83,9 +84,9 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://takeshutter.co.kr:3000",
+    "http://takeshutter.co.kr",
+    "https://takeshutter.co.kr",
     "http://localhost:3000",
-    "http://127.0.0.1:3000",
 ]
 CORS_ALLOW_HEADERS = [
     "accept",
@@ -218,3 +219,5 @@ SIMPLE_JWT = {
 # ACCOUNTS_EMAIL_REQUIRED = True            # email 필드 사용 o
 # ACCOUNTS_USERNAME_REQUIRED = False        # username 필드 사용 x
 # ACCOUNTS_AUTHENTICATION_METHOD = 'email'
+
+SITE_ID = 1
