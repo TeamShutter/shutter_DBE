@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from studio.views import TownView
 
 urlpatterns = [
     path('studio/', include('studio.urls')),
@@ -23,4 +24,5 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')),
     path('accounts/', include('allauth.urls')),
     path('accounts/', include('dj_rest_auth.urls')),
+    path('town/', TownView.as_view(), name="all_town"),
 ]

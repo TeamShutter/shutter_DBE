@@ -380,3 +380,18 @@ class FollowStudio(APIView):
             return Response({'follow' : follow, 'success' : "follow studio"}, status=status.HTTP_200_OK)
         except:
             return Response({"error": "failed to follow studio"}, status=status.HTTP_400_BAD_REQUEST)
+
+class TownView(APIView):
+    authentication_classes=[JWTAuthenticationSafe]
+
+    def get(self, request):
+        try:
+            studio = Studio.objects.all()
+            town = []
+            for i in range(len(studio)):
+                if Studio.objects.values()[i]['town'] not in town:
+                    town.append(Studio.objects.values()[i]['town'])
+            print(town)
+            return Response({'data' : town})
+        except:
+            return Response({"error": "failed to get town"}, status=status.HTTP_400_BAD_REQUEST)
