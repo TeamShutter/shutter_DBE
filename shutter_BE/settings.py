@@ -217,7 +217,5 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN': 'refresh_token',
 }
 
-# ACCOUNTS_USER_MODEL_USERNAME_FIELD = None # username 필드 사용 x
-# ACCOUNTS_EMAIL_REQUIRED = True            # email 필드 사용 o
-# ACCOUNTS_USERNAME_REQUIRED = False        # username 필드 사용 x
-# ACCOUNTS_AUTHENTICATION_METHOD = 'email'
+
+CSRF_TRUSTED_ORIGINS = ['https://*.api.takeshutter.co.kr/','http://*.127.0.0.1']
