@@ -15,9 +15,9 @@ from rest_framework.pagination import PageNumberPagination
 from accounts.authenticate import JWTAuthenticationSafe
 from random import shuffle
 # Create your views here.
-
 class AllPhotoView(APIView):
     authentication_classes=[JWTAuthenticationSafe]
+
     def get(self, request):
         try:
             paginator = PageNumberPagination()
@@ -26,7 +26,7 @@ class AllPhotoView(APIView):
                 studio = Studio.objects.get(id=request.GET.get('studio_id'))
                 photo = Photo.objects.filter(studio=studio)
             else:
-                photo = Photo.objects.order_by('?').all()
+                photo = Photo.objects.order_by('?').all()                
                 if request.GET.get('town') and request.GET.get('town') != '0':
                     studios = Studio.objects.filter(town = request.GET.get('town'))
                     photo = photo.filter(studio__in = studios)

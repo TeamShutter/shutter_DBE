@@ -31,7 +31,7 @@ class Place(models.Model):
     address = models.CharField(max_length=50, default='address')
 
     def __str__(self):
-        return(self.name)
+        return(f"{self.studio.name}_place_{self.name}")
 
 
 class Product(models.Model):
@@ -45,7 +45,7 @@ class Product(models.Model):
     updated_at = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
-        return(self.name)
+        return(f"{self.studio.name}_product_{self.name}")
 
     def update_date(self):
         self.updated_at = timezone.now()
@@ -59,7 +59,7 @@ class OpenedTime(models.Model): #이거는 studio랑 manytomany field로 이루�
     minute = models.IntegerField(default=00)
 
     def __str__(self):
-        return(f'{self.date}:{self.hour}:{self.minute}') #이러면 곂칠듯 이름? 저장은 되는데 우리가 구분할 필요가 있나?
+        return(f'{self.studio.name}_open_{self.date}:{self.hour}:{self.minute}') #이러면 곂칠듯 이름? 저장은 되는데 우리가 구분할 필요가 있나?
 
 
 class Photographer(models.Model):
@@ -67,7 +67,7 @@ class Photographer(models.Model):
     name = models.CharField(max_length=20, default='photographer_name')
 
     def __str__(self):
-        return(self.name)
+        return(f"{self.studio.name}_photographer_{self.name}")
 
 
 # 이부분 수정이 필요할듯.. 애초에 OpenedTime 만들때 photographer를 넣어야하지 않나??
@@ -79,6 +79,9 @@ class AssignedTime(models.Model):
     # if photographer is not available, is_absence is True.
     is_available = models.BooleanField(default=False)
 
+    def __str__(self):
+        return(f"open_{self.opened_time}_assigned_{self.photographer.name}")
+
     def update_available(self):
         self.is_available = True if self.is_available == False else False
         self.save()
@@ -86,6 +89,9 @@ class AssignedTime(models.Model):
 class StudioImage(models.Model):
     url = models.CharField(max_length=500, default='url')
     studio = models.ForeignKey(Studio, null = True, on_delete=models.CASCADE, related_name = "studio_images")
+
+    def __str__(self):
+        return(f"{self.studio.name}_studio_image_{self.id}")
 
 
 
@@ -97,6 +103,9 @@ class Review(models.Model):
     rating = models.IntegerField(choices=RATING_CHOICES, default =0)
     created_at = models.DateTimeField(default=timezone.now)
 
+    def __str__(self):
+        return(f"{self.author.username}_review_{self.studio.name}_{self.id}")
+
     class Meta:
         db_table = "review"
 
@@ -106,5 +115,8 @@ class Follow(models.Model):
     studio = models.ForeignKey(Studio, null=True, blank=True, on_delete=models.CASCADE)
     created_at = models.DateTimeField(default = timezone.now)
 
+    def __str__(self):
+        return(f"{self.user.username}_follow_{self.studio.name}")
+    
     class Meta:
         db_table = "follow"

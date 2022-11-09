@@ -25,4 +25,5 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     path('accounts/', include('dj_rest_auth.urls')),
     path('town/', TownView.as_view(), name="all_town"),
+    path('tags/', include('tags.urls'))
 ]

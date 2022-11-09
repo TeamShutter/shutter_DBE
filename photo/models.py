@@ -3,7 +3,6 @@ from accounts.models import User
 from django.utils import timezone
 from studio.models import Studio
 
-
 # Create your models here.
 class Photo(models.Model):
     SEX = (('male', 'male'), ('female', 'female'))
@@ -16,6 +15,9 @@ class Photo(models.Model):
     like_users = models.ManyToManyField(User, blank=True, related_name='like_photos', through='Like')
     price = models.IntegerField(blank=True, null=True)
 
+    def __str__(self):
+        return(f"{self.studio.name}'s photo_{self.id}")
+
     class Meta:
         db_table = "photo"
 
@@ -26,5 +28,12 @@ class Like(models.Model):
     photo = models.ForeignKey(Photo, null=True, blank=True, on_delete=models.CASCADE)
     created_at = models.DateTimeField(default=timezone.now)
 
+    def __str__(self):
+        return(f"{self.user.username}'s like for photo_{self.photo.id}")
+
     class Meta:
         db_table = 'like'
+
+
+
+
