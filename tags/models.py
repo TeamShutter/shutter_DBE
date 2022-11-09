@@ -4,14 +4,14 @@ from photo.models import Photo
 # Create your models here.
 class Tag(models.Model):
     name = models.CharField(max_length=20)
-    photo = models.ManyToManyField(Photo, through='Photo_Tag')
+    photos = models.ManyToManyField(Photo, through='PhotoTag', related_name='tags')
 
     def __str__(self):
         return(f"{self.name}")
 
-class Photo_Tag(models.Model):
-    photo = models.ForeignKey(Photo, null=True, blank=True, on_delete=models.CASCADE)
-    tag = models.ForeignKey(Tag, null=True, blank=True, on_delete=models.CASCADE)
+class PhotoTag(models.Model):
+    photo = models.ForeignKey(Photo, on_delete=models.CASCADE)
+    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
 
     def __str__(self):
         return(f"{self.photo}_{self.tag}")

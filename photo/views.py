@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from accounts.permissions import StudioReadOnlyUserAll
 from studio.models import Studio
 from .models import Photo, Like
+from tags.models import Tag
 from .serializers import PhotoSerializer
 from studio.serializers import StudioSerializer
 from django.contrib.auth.models import User
@@ -26,7 +27,12 @@ class AllPhotoView(APIView):
                 studio = Studio.objects.get(id=request.GET.get('studio_id'))
                 photo = Photo.objects.filter(studio=studio)
             else:
-                photo = Photo.objects.order_by('?').all()                
+                photo = Photo.objects.order_by('?').all()
+                if request.GET.get('tags') and request.GET.get('tags') != '0':
+                    tags_id = request.GET.getlist('tags')
+                    for tag_id in tags_id:
+                        tags = Tag.objects.filter(id=tag_id)
+                        photo = photo.filter(tags__in=tags)                
                 if request.GET.get('town') and request.GET.get('town') != '0':
                     studios = Studio.objects.filter(town = request.GET.get('town'))
                     photo = photo.filter(studio__in = studios)
