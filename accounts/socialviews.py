@@ -33,7 +33,6 @@ def kakao_callback(request):
         f"https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id={rest_api_key}&redirect_uri={KAKAO_CALLBACK_URI}&code={code}")
     token_req_json = token_req.json()
     error = token_req_json.get("error")
-    print(error)
     if error is not None:
         raise JSONDecodeError(error)
     access_token = token_req_json.get("access_token")
@@ -66,8 +65,9 @@ def kakao_callback(request):
             return JsonResponse({'err_msg': 'no matching social type'}, status=status.HTTP_400_BAD_REQUEST)
         # 기존에 Google로 가입된 유저
         data = {'access_token': access_token, 'code': code}
+        print(data)
         accept = requests.post(
-            f"{BASE_URL}accounts/kakao/login/finish/", data=data)
+            "http://127.0.0.1:8000/accounts/kakao/login/finish/", data=data)
         accept_status = accept.status_code
         if accept_status != 200:
             return JsonResponse({'err_msg': 'failed to signin'}, status=accept_status)
@@ -83,7 +83,7 @@ def kakao_callback(request):
         # 기존에 가입된 유저가 없으면 새로 가입
         data = {'access_token': access_token, 'code': code}
         accept = requests.post(
-            f"{BASE_URL}accounts/kakao/login/finish/", data=data)
+            "http://127.0.0.1:8000/accounts/kakao/login/finish/", data=data)
         accept_status = accept.status_code
         if accept_status != 200:
             return JsonResponse({'err_msg': 'failed to signup'}, status=accept_status)
