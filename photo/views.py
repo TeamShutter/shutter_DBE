@@ -30,6 +30,10 @@ class AllPhotoView(APIView):
                 if request.GET.get('town') and request.GET.get('town') != '0':
                     studios = Studio.objects.filter(town = request.GET.get('town'))
                     photo = photo.filter(studio__in = studios)
+                if request.GET.get('max_price') and request.GET.get('max_price') != "0":
+                    photo = photo.filter(price__lte = request.GET.get('max_price'))
+                if request.GET.get('min_price') and request.GET.get('min_price') != "0":
+                    photo = photo.filter(price__gte = request.GET.get('min_price'))
             result_page = paginator.paginate_queryset(photo, request)
             serializer = PhotoSerializer(result_page, many=True)        
             return Response({"data" : serializer.data, "success": "get all photos"}, status=status.HTTP_200_OK)
