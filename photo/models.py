@@ -13,6 +13,7 @@ class Photo(models.Model):
     studio = models.ForeignKey(Studio, null = True, on_delete=models.CASCADE)
     #address 는 외래키, 태그는 다대다(하나의 사진에서 여러개의 태그를 등록할 수 있도록)
     like_users = models.ManyToManyField(User, blank=True, related_name='like_photos', through='Like')
+    price = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
         return(f"{self.studio.name}'s photo_{self.id}")

@@ -12,7 +12,7 @@ class AllTagView(APIView):
         try:
             tag = Tag.objects.all()
             serializer = TagSerializer(tag, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response({"data" : serializer.data, "success": "get all tags"}, status=status.HTTP_200_OK)
         except:
             return Response({"error": "failed to get all tags"}, status=status.HTTP_400_BAD_REQUEST)
 
