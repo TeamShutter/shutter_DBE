@@ -4,7 +4,7 @@ from photo.models import Photo
 # Create your models here.
 class Tag(models.Model):
     name = models.CharField(max_length=20)
-    photos = models.ManyToManyField(Photo, through='PhotoTag', related_name='tags')
+    photos = models.ManyToManyField(Photo, blank=True ,through='PhotoTag', related_name='tags')
 
     def __str__(self):
         return(f"{self.name}")
