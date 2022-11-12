@@ -59,6 +59,17 @@ class PhotoView(APIView):
             return Response({'photo_data': serializer.data, 'like_data': like_count}, status=status.HTTP_200_OK)
         except:
             return Response({"error": "failed to get photo"},status=status.HTTP_400_BAD_REQUEST)
+    def patch(self, request, photo_id):
+        try:
+            photo = Photo.objects.get(id = photo_id)
+            serializer = PhotoSerializer(photo, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({"data": serializer.data, "success": "photo changed"})
+            return Response({'error' : 'patch reservation invalid form'}, status=status.HTTP_400_BAD_REQUEST)
+            return
+        except:
+            return Response({"error": "failed to patch photo"},status=status.HTTP_400_BAD_REQUEST)
 
 
 
