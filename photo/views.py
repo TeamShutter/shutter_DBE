@@ -12,7 +12,6 @@ from tags.models import Tag
 from .serializers import PhotoSerializer
 from studio.serializers import StudioSerializer
 from django.contrib.auth.models import User
-from rest_framework.pagination import PageNumberPagination
 from accounts.authenticate import JWTAuthenticationSafe
 from itertools import combinations
 
@@ -22,8 +21,6 @@ class AllPhotoView(APIView):
 
     def get(self, request):
         try:
-            paginator = PageNumberPagination()
-            paginator.page_size = 60
             if request.GET.get('studio_id'):
                 studio = Studio.objects.get(id=request.GET.get('studio_id'))
                 photo = Photo.objects.filter(studio=studio)
@@ -43,8 +40,7 @@ class AllPhotoView(APIView):
                     photo = photo.filter(price__gte = request.GET.get('min_price'))
                 if request.GET.get('color') and request.GET.get('color') != "0":
                     photo = photo.filter(color = request.GET.get('color'))
-            result_page = paginator.paginate_queryset(photo, request)
-            serializer = PhotoSerializer(result_page, many=True)        
+            serializer = PhotoSerializer(photo, many=True)        
             return Response({"data" : serializer.data, "success": "get all photos"}, status=status.HTTP_200_OK)
         except:
             return Response({"error": "failed to get all photos"},status=status.HTTP_400_BAD_REQUEST)
