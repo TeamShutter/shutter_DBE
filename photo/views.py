@@ -14,7 +14,8 @@ from studio.serializers import StudioSerializer
 from django.contrib.auth.models import User
 from rest_framework.pagination import PageNumberPagination
 from accounts.authenticate import JWTAuthenticationSafe
-from random import shuffle
+from itertools import combinations
+
 # Create your views here.
 class AllPhotoView(APIView):
     authentication_classes=[JWTAuthenticationSafe]
@@ -40,6 +41,8 @@ class AllPhotoView(APIView):
                     photo = photo.filter(price__lte = request.GET.get('max_price'))
                 if request.GET.get('min_price') and request.GET.get('min_price') != "0":
                     photo = photo.filter(price__gte = request.GET.get('min_price'))
+                if request.GET.get('color') and request.GET.get('color') != "0":
+                    photo = photo.filter(color = request.GET.get('color'))
             result_page = paginator.paginate_queryset(photo, request)
             serializer = PhotoSerializer(result_page, many=True)        
             return Response({"data" : serializer.data, "success": "get all photos"}, status=status.HTTP_200_OK)
@@ -77,3 +80,39 @@ class LikePhotoView(APIView):
         except:
             return Response({"error": "like failed.. "}, status=status.HTTP_400_BAD_REQUEST)
 
+
+# color를 원래대로 설정 안하고 추가한 이름대로 보여주고 싶을때
+
+# class PhotoColorView(APIView):
+#     authentication_classes=[JWTAuthenticationSafe]
+#     def get(self, request):
+#         try:
+#             photo = Photo.objects.all()
+#             color = []
+#             for i in range(len(photo)):
+#                 if photo.values()[i]['color'] not in color:
+#                     color.append(photo.values()[i]['color'])
+#             return Response({'data' : color}, status=status.HTTP_200_OK)
+#         except:
+#             return Response({"error": "failed to get color"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+# 연관된 사진들 (태그 2개 이상 곂칠때로 일단 설정)
+class RelatedPhotoView(APIView):
+    authentication_classes=[JWTAuthenticationSafe]
+    def get(self, reqeust, photo_id):
+        try:
+            photo = Photo.objects.filter(id=photo_id)
+            tags = Tag.objects.filter(photos__in = photo)
+            all_photos = Photo.objects.all()
+            related_photo_list = []
+            tag_sets = list(combinations(tags, 2))
+            for tag_set in tag_sets:
+                related_photos = all_photos.filter(tags__in = tag_set)
+                related_photo_list.append(related_photos)
+            print(related_photo_list)
+
+            serializer = PhotoSerializer(related_photo_list, many=True)
+            return Response({"success": "get all photos"}, status=status.HTTP_200_OK)
+        except:
+            return Response({"error": "failed to get related photos"}, status=status.HTTP_400_BAD_REQUEST)
