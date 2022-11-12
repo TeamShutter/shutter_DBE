@@ -25,7 +25,8 @@ class AllPhotoView(APIView):
                 studio = Studio.objects.get(id=request.GET.get('studio_id'))
                 photo = Photo.objects.filter(studio=studio)
             else:
-                photo = Photo.objects.order_by('?').all()
+                # photo = Photo.objects.order_by('?').all() : Todo -> 사진 랜덤으로 보여주기
+                photo = Photo.objects.all()
                 if request.GET.get('tags') and request.GET.get('tags') != '0':
                     tags_id = request.GET.getlist('tags')
                     for tag_id in tags_id:
