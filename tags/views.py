@@ -21,7 +21,6 @@ class AllTagView(APIView):
             return Response({"data" : serializer.data, "success": "get all tags"}, status=status.HTTP_200_OK)
         except:
             return Response({"error": "failed to get all tags"}, status=status.HTTP_400_BAD_REQUEST)
-<<<<<<< HEAD
 
     def post(self, request):
         try:
@@ -57,5 +56,3 @@ class PhotoTagView(APIView):
         except:
             return Response({"1":"1"})
         return Response({"success": "photo tag objects created"}, status=status.HTTP_200_OK)
-=======
->>>>>>> 272a386d6e71cb10d56957328b4cf5b351e02823
