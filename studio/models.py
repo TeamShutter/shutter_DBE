@@ -23,6 +23,9 @@ class Studio(models.Model):
     def __str__(self):
         return(self.name)
 
+    class Meta:
+        db_table = 'studio'
+
 
 class Place(models.Model):
     studio = models.ForeignKey(Studio, null=True, blank=True, on_delete=models.CASCADE)
@@ -32,7 +35,9 @@ class Place(models.Model):
 
     def __str__(self):
         return(f"{self.studio.name}_place_{self.name}")
-
+        
+    class Meta:
+        db_table = 'place'
 
 class Product(models.Model):
     studio = models.ForeignKey(Studio, null=True, blank=True, on_delete=models.CASCADE)
@@ -50,6 +55,9 @@ class Product(models.Model):
     def update_date(self):
         self.updated_at = timezone.now()
         self.save()
+    
+    class Meta:
+        db_table = 'product'
 
 
 class OpenedTime(models.Model): #이거는 studio랑 manytomany field로 이루어져야할듯??
@@ -61,6 +69,9 @@ class OpenedTime(models.Model): #이거는 studio랑 manytomany field로 이루�
     def __str__(self):
         return(f'{self.studio.name}_open_{self.date}:{self.hour}:{self.minute}') #이러면 곂칠듯 이름? 저장은 되는데 우리가 구분할 필요가 있나?
 
+    class Meta:
+        db_table = 'opened_time'
+
 
 class Photographer(models.Model):
     studio = models.ForeignKey(Studio, null=True, blank=True, on_delete=models.CASCADE)
@@ -68,6 +79,9 @@ class Photographer(models.Model):
 
     def __str__(self):
         return(f"{self.studio.name}_photographer_{self.name}")
+
+    class Meta:
+        db_table = 'photographer'
 
 
 # 이부분 수정이 필요할듯.. 애초에 OpenedTime 만들때 photographer를 넣어야하지 않나??
@@ -86,12 +100,18 @@ class AssignedTime(models.Model):
         self.is_available = True if self.is_available == False else False
         self.save()
 
+    class Meta:
+        db_table = 'assigned_time'
+
 class StudioImage(models.Model):
     url = models.CharField(max_length=500, default='url')
     studio = models.ForeignKey(Studio, null = True, on_delete=models.CASCADE, related_name = "studio_images")
 
     def __str__(self):
         return(f"{self.studio.name}_studio_image_{self.id}")
+
+    class Meta:
+        db_table = 'studio_image'
 
 
 
