@@ -12,7 +12,6 @@ from tags.models import Tag
 from .serializers import PhotoSerializer
 from studio.serializers import StudioSerializer
 from django.contrib.auth.models import User
-from rest_framework.pagination import PageNumberPagination
 from accounts.authenticate import JWTAuthenticationSafe
 from itertools import combinations
 
@@ -22,13 +21,12 @@ class AllPhotoView(APIView):
 
     def get(self, request):
         try:
-            paginator = PageNumberPagination()
-            paginator.page_size = 60
             if request.GET.get('studio_id'):
                 studio = Studio.objects.get(id=request.GET.get('studio_id'))
                 photo = Photo.objects.filter(studio=studio)
             else:
-                photo = Photo.objects.order_by('?').all()
+                # photo = Photo.objects.order_by('?').all() : Todo -> 사진 랜덤으로 보여주기
+                photo = Photo.objects.all()
                 if request.GET.get('tags') and request.GET.get('tags') != '0':
                     tags_id = request.GET.getlist('tags')
                     for tag_id in tags_id:
@@ -43,8 +41,7 @@ class AllPhotoView(APIView):
                     photo = photo.filter(price__gte = request.GET.get('min_price'))
                 if request.GET.get('color') and request.GET.get('color') != "0":
                     photo = photo.filter(color = request.GET.get('color'))
-            result_page = paginator.paginate_queryset(photo, request)
-            serializer = PhotoSerializer(result_page, many=True)        
+            serializer = PhotoSerializer(photo, many=True)        
             return Response({"data" : serializer.data, "success": "get all photos"}, status=status.HTTP_200_OK)
         except:
             return Response({"error": "failed to get all photos"},status=status.HTTP_400_BAD_REQUEST)
@@ -59,6 +56,17 @@ class PhotoView(APIView):
             return Response({'photo_data': serializer.data, 'like_data': like_count}, status=status.HTTP_200_OK)
         except:
             return Response({"error": "failed to get photo"},status=status.HTTP_400_BAD_REQUEST)
+    def patch(self, request, photo_id):
+        try:
+            photo = Photo.objects.get(id = photo_id)
+            serializer = PhotoSerializer(photo, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({"data": serializer.data, "success": "photo changed"})
+            return Response({'error' : 'patch reservation invalid form'}, status=status.HTTP_400_BAD_REQUEST)
+            return
+        except:
+            return Response({"error": "failed to patch photo"},status=status.HTTP_400_BAD_REQUEST)
 
 
 
