@@ -22,6 +22,8 @@ class Reservation(models.Model):
     def __str__(self):
         return(f"{self.user.username}'s reservation : {self.id}")
 
+    class Meta:
+        db_table = "reservation"
     # def state_change(self, state):
     #     assigned_id = self.assigned_time
     #     assigned_time = AssignedTime.objects.get(id=assigned_id)
