@@ -16,45 +16,43 @@ class StudioImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudioImage
         fields = ('id', 'url')
+        
 class StudioSerializer(serializers.ModelSerializer):
     studio_images = StudioImageSerializer(many=True)
     class Meta:
         model = Studio
-
         fields = ('id', 'name', 'thumbnail', 'description', 'studio_images', 'phone', 'naver_link','instagram_link','open_time', 'close_time', 'address', 'town', 'follow_users')
 
 
-
-
-class ProductSerializer(serializers.Serializer):
-    # studio = StudioSerializer(read_only=True)  이거 들어가면 안되는데 왜 그런거지??..
+class ProductSerializer(serializers.ModelSerializer):
+    # studio = StudioSerializer(read_only=True) #이거 없으니까 product serializer 에서 studio data가 안보였음
 
     class Meta:
         model = Product
-        fields = ('studio', 'name', 'description', 'price', 'duration', 'created_at', 'updated_at')
+        fields = ('id', 'studio', 'name', 'description', 'price', 'duration', 'created_at', 'updated_at')
 
-class PlaceSerializer(serializers.Serializer):
+class PlaceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Place
-        fileds = ('studio', 'name', 'description', 'address')
+        fields = ('studio', 'name', 'description', 'address')
     
 
-class OpenedTimeSerializer(serializers.Serializer):
+class OpenedTimeSerializer(serializers.ModelSerializer):
     # studio = StudioSerializer(many=True)
 
     class Meta:
         model = OpenedTime
         fields = ('studio', 'date', 'hour', 'minute')
 
-class PhotographerSerializer(serializers.Serializer):
+class PhotographerSerializer(serializers.ModelSerializer):
     # studio = StudioSerializer(many=True)
 
     class Meta:
         model = Photographer
         fields = ('studio', 'name')
 
-class AssignedTimeSerializer(serializers.Serializer):
+class AssignedTimeSerializer(serializers.ModelSerializer):
     # photographer = PhotographerSerializer(many=True) 이부분 어떡하지??..
     # openedTime = OpenedTimeSerializer(many=True)
     # is_absence = serializers.BooleanField(default=False)

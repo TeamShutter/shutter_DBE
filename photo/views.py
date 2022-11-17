@@ -14,6 +14,7 @@ from studio.serializers import StudioSerializer
 from django.contrib.auth.models import User
 from accounts.authenticate import JWTAuthenticationSafe
 from itertools import combinations
+from django.db.models import Q
 
 # Create your views here.
 class AllPhotoView(APIView):
@@ -111,16 +112,21 @@ class RelatedPhotoView(APIView):
     def get(self, reqeust, photo_id):
         try:
             photo = Photo.objects.filter(id=photo_id)
+            photo_color = photo.values()[0]['color']
             tags = Tag.objects.filter(photos__in = photo)
-            all_photos = Photo.objects.all()
             related_photo_list = []
             tag_sets = list(combinations(tags, 2))
             for tag_set in tag_sets:
-                related_photos = all_photos.filter(tags__in = tag_set)
-                related_photo_list.append(related_photos)
-            print(related_photo_list)
-
+                related_photos = Photo.objects.all().exclude(id=photo_id).filter(color=photo_color)
+                for tag in tag_set:
+                    tag_in_list = []
+                    tag_in_list.append(tag)
+                    related_photos = related_photos.filter(tags__in = tag_in_list)
+                
+                for related_photo in related_photos:
+                    if related_photo not in related_photo_list:
+                        related_photo_list.append(related_photo)
             serializer = PhotoSerializer(related_photo_list, many=True)
-            return Response({"success": "get all photos"}, status=status.HTTP_200_OK)
+            return Response({"data": serializer.data, "success": "get all photos"}, status=status.HTTP_200_OK)
         except:
             return Response({"error": "failed to get related photos"}, status=status.HTTP_400_BAD_REQUEST)

@@ -282,7 +282,7 @@ class AllStudioView(APIView):
 
     def get(self, request):
         try:
-            studio = Studio.objects.order_by('?').all()
+            studio = Studio.objects.all()
             if request.GET.get('town') and request.GET.get('town') != '0':
                 studio = studio.filter(town = request.GET.get('town'))
             serializer = StudioSerializer(studio, many=True)        
@@ -298,10 +298,15 @@ class StudioView(APIView):
         try:
             studio = Studio.objects.get(id=studio_id)
             photos = Photo.objects.filter(studio_id=studio_id)
-            
+            products = Product.objects.filter(studio=studio)
+
             studio_serializer = StudioSerializer(studio)
             photo_serializer = PhotoSerializer(photos, many= True)
-            return Response({"studio_data" : studio_serializer.data, "photo_data" : photo_serializer.data, "success": "get studio"})
+            product_serializer = ProductSerializer(products, many=True)
+            print(studio_serializer.data)
+            print(photo_serializer.data)
+            print(product_serializer.data)
+            return Response({"studio_data" : studio_serializer.data, "photo_data" : photo_serializer.data, "product_data":product_serializer.data, "success": "get studio"})
         except:
             return Response({"error": "failed to get studio infos."},status=status.HTTP_400_BAD_REQUEST)
 
