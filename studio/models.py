@@ -19,9 +19,14 @@ class Studio(models.Model):
     town = models.CharField(max_length=50, blank=True, null=True)
     photoshop = models.IntegerField(choices=PHOTOSHOP_CHOICES, default=0)
     thumbnail = models.CharField(max_length=500, blank=True, null=True)
+    vector = models.JSONField(blank=True, null=True)
     
     def __str__(self):
         return(self.name)
+
+    def update_vector(self, studio_vector):
+        self.vector =studio_vector
+        self.save()
 
     class Meta:
         db_table = 'studio'
