@@ -401,9 +401,8 @@ class StudioRecommendView(APIView):
                 # product_list = request.GET.get('product')
                 color_list = request.GET.getlist('color')
                 town_list = request.GET.getlist('town')
-                print(mood_list)
             except:
-                return Response({"error":"parsing error"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"error":"input error"}, status=status.HTTP_400_BAD_REQUEST)
             try:
                 tags = Tag.objects.filter(name__in = mood_list)
                 choice_vector = np.zeros(shape=(23,))
@@ -411,18 +410,20 @@ class StudioRecommendView(APIView):
                     choice_vector[tag.id-1] = 1
                 for color in color_list:
                     choice_vector[int(color)+17] = 1
-                print(choice_vector)
             except:
-                return Response({"error":"choice vector"})
+                return Response({"error":"choice vector not generated"}, status=status.HTTP_400_BAD_REQUEST)
             studios = Studio.objects.all()
             # studios = studio.filter(product__in = product_list)
             studios = studios.filter(town__in = town_list)
-            print(studios)
             if len(studios) == 0:
                 return Response({'result':'no matching studio'}, status=status.HTTP_200_OK)
             sims = []
             for studio in studios:
-                studio_vector = studio_vectorize(studio)
+                if studio.vector == []:
+                    studio_vector = studio_vectorize(studio)
+                    studio.update_vector(list(studio_vector))
+                else:
+                    studio_vector = np.array(studio.vector)
                 sims.append({"name" : studio.name, "sim" :similarity(studio_vector, choice_vector)})
             sims = sorted(sims, key=lambda x:x['sim'], reverse=True)
             if len(sims) > 3:

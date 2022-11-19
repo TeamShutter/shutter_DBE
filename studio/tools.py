@@ -11,18 +11,7 @@ def similarity(vec_1, vec_2):
     vec_dot = np.dot(vec_1, vec_2)
     return vec_dot/(vec_1_size*vec_2_size)
 
-# def json_reader():
-#     with open('studio/studio_vector.json', 'rb') as f:
-#         file_ = json.load(f)
-#     return file_
 
-# async def json_loader(new_studios, old_studios):
-#     await waiter(new_studios, old_studios)
-
-# async def waiter(new_studios, old_studios):
-#     studios = new_studios+old_studios
-#     with open('studio/studio_vector.json', 'w') as f:
-#         json.dump(studios, f, indent=2)
 
 def studio_vectorize(studio_obj):
     photos = Photo.objects.filter(studio = studio_obj)
