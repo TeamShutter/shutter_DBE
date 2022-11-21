@@ -112,12 +112,12 @@ class RelatedPhotoView(APIView):
     def get(self, reqeust, photo_id):
         try:
             photo = Photo.objects.filter(id=photo_id)
-            photo_color = photo.values()[0]['color']
+            # photo_color = photo.values()[0]['color']
             tags = Tag.objects.filter(photos__in = photo)
             related_photo_list = []
             tag_sets = list(combinations(tags, 2))
             for tag_set in tag_sets:
-                related_photos = Photo.objects.all().exclude(id=photo_id).filter(color=photo_color)
+                related_photos = Photo.objects.all().exclude(id=photo_id)
                 for tag in tag_set:
                     tag_in_list = []
                     tag_in_list.append(tag)
