@@ -100,3 +100,9 @@ class UserGroupView(generics.GenericAPIView):
             return Response({'success': "user group assigned"}, status=status.HTTP_200_OK)
         except:
             return Response({"error": "failed to assign group"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+# class UserProfileView(APIView):
+#     permission_classes = [permissions.IsAuthenticated]
+#     def get(self, request):
+#         u

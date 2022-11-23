@@ -43,7 +43,7 @@ class AllStudioReservationView(APIView):
     
     def post(self, request, studio_id):
         try:
-            user = User.objects.get(id=request.data.get('photographer_id')) # 이거 포토그래퍼 아이디를 user에서 왜 가져오는건지 모르겠음! 수정해야할 듯.
+            user = request.user # 이거 포토그래퍼 아이디를 user에서 왜 가져오는건지 모르겠음! 수정해야할 듯.
             assigned_time = AssignedTime.objects.get(id=request.data.get('assignedtime_id')) 
             description = request.data.get('description')
             reservation = Reservation.objects.create(user=user, assigned_time=assigned_time, description=description)
@@ -56,9 +56,9 @@ class AllStudioReservationView(APIView):
 
 class StudioReservationView(APIView):
     permission_classes = [UserReadOnlyStudioAll]
-    def get(self, request, id, studio_id):
+    def get(self, request, studio_id, reservation_id):
         try:
-            reservation = Reservation.objects.get(id=id)
+            reservation = Reservation.objects.get(id=reservation_id)
             serializer = ReservationSerializer(reservation)
             return Response({'data' : serializer.data, 'success' : 'get reservation'})
         

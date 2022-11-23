@@ -54,6 +54,9 @@ class LogInSerializer(serializers.ModelSerializer):
             'tokens': user.tokens
         }
 
+# class KaKaoLoginSerializer(serializers.Serializer):
+
+
 class LogOutSerializer(serializers.Serializer):
     refresh = serializers.CharField()
 
