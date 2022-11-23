@@ -29,6 +29,10 @@ class Studio(models.Model):
         self.vector = studio_vector
         self.save()
 
+    def update_vector(self, studio_vector):
+        self.vector =studio_vector
+        self.save()
+
     class Meta:
         db_table = 'studio'
 

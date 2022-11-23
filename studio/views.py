@@ -3,6 +3,7 @@ from django.views.generic import View
 from django.shortcuts import render
 
 from accounts.authenticate import JWTAuthenticationSafe
+from accounts.serializers import UserSerializer
 from accounts.models import User
 from accounts.permissions import StudioReadOnlyUserAll, UserReadOnlyStudioAll
 from photo.models import Photo
@@ -393,7 +394,6 @@ class TownView(APIView):
 
 class StudioRecommendView(APIView):
     authentication_classes=[JWTAuthenticationSafe]
-
     def get(self, request):
         try:
             try:
@@ -407,13 +407,20 @@ class StudioRecommendView(APIView):
                 tags = Tag.objects.filter(name__in = mood_list)
                 choice_vector = np.zeros(shape=(23,))
                 for tag in tags:
-                    choice_vector[tag.id-1] = 1
+                    choice_vector[tag.id-1] = 10
                 for color in color_list:
                     choice_vector[int(color)+17] = 1
+<<<<<<< HEAD
+                for i in range(23):
+                    if choice_vector[i] == 0:
+                        choice_vector[i] = -1
+            except:
+                return Response({"error":"choice vector"}, status=status.HTTP_400_BAD_REQUEST)
+=======
             except:
                 return Response({"error":"choice vector not generated"}, status=status.HTTP_400_BAD_REQUEST)
+>>>>>>> c6557bf7b02c4f5563aaa74e3e4cd6cb7f47f0fc
             studios = Studio.objects.all()
-            # studios = studio.filter(product__in = product_list)
             studios = studios.filter(town__in = town_list)
             if len(studios) == 0:
                 return Response({'result':'no matching studio'}, status=status.HTTP_200_OK)
@@ -424,16 +431,30 @@ class StudioRecommendView(APIView):
                     studio.update_vector(list(studio_vector))
                 else:
                     studio_vector = np.array(studio.vector)
+<<<<<<< HEAD
+                sims.append({"name" : studio.name, "sim" : similarity(studio_vector, choice_vector)})
+=======
                 sims.append({"name" : studio.name, "sim" :similarity(studio_vector, choice_vector)})
+>>>>>>> c6557bf7b02c4f5563aaa74e3e4cd6cb7f47f0fc
             sims = sorted(sims, key=lambda x:x['sim'], reverse=True)
-            if len(sims) > 3:
-                recommendation = [s['name'] for s in sims[:2]]
-            else :
+            try:
+                recommendation = [s['name'] for s in sims[:3]]
+                other = [s['name'] for s in sims[3:]]
+                top3_studio = Studio.objects.filter(name__in = recommendation)
+                other_studio = Studio.objects.filter(name__in = other)
+                top3_serializer = StudioSerializer(top3_studio, many=True)
+                other_serializer = StudioSerializer(other_studio, many=True)
+                return Response({'top3':top3_serializer.data, 'other':other_serializer.data}, status=status.HTTP_200_OK)
+            except:
                 recommendation = [s['name'] for s in sims]
-            
-            recommend_studio = Studio.objects.filter(name__in = recommendation)
-            serializer = StudioSerializer(recommend_studio, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+                recommend_studio = Studio.objects.filter(name__in = recommendation)
+                serializer = StudioSerializer(recommend_studio, many=True)
+                return Response({"total_results":serializer.data}, status=status.HTTP_200_OK)
         except:
-            return Response({'error':'error'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error' : 'error'}, status=status.HTTP_400_BAD_REQUEST)
 
+    def post(self, request):
+        data=request.data
+        user=request.user
+        serializer = UserSerializer(user, data=data, partial=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

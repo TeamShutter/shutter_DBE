@@ -5,10 +5,13 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser	# AbstractUser 불러오기
 
 class User(AbstractUser):
+    SEX = (('male', 'male'), ('female', 'female'))
+
     last_name = None
     first_name = None
     name = models.CharField(max_length=10, default='name')
-
+    age = models.IntegerField(null=True, blank=True)
+    sex = models.CharField(max_length = 20, choices = SEX, null=True, blank=True)
 
     def __str__(self):
         return(f'{self.email}')

@@ -11,20 +11,27 @@ def similarity(vec_1, vec_2):
     vec_dot = np.dot(vec_1, vec_2)
     return vec_dot/(vec_1_size*vec_2_size)
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> c6557bf7b02c4f5563aaa74e3e4cd6cb7f47f0fc
 
 def studio_vectorize(studio_obj):
+    vector_size = 23
+    tag_length = 17
+
     photos = Photo.objects.filter(studio = studio_obj)
-    vector = np.zeros(shape = (23,))
+    vector = np.zeros(shape = (vector_size,))
     tag_num = 0
     for photo in photos:
         tags =photo.tags.all()
         for tag in tags:
             vector[tag.id-1] += 1
             tag_num += 1
-        vector[photo.color+17] += 1/len(photos)
+        vector[photo.color + tag_length] += 1/len(photos)
     for i in range(18):
         vector[i] = vector[i]/tag_num
+
     return np.array(vector)
         
     
