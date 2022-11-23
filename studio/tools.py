@@ -11,6 +11,10 @@ def similarity(vec_1, vec_2):
     vec_dot = np.dot(vec_1, vec_2)
     return vec_dot/(vec_1_size*vec_2_size)
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> c6557bf7b02c4f5563aaa74e3e4cd6cb7f47f0fc
 
 def studio_vectorize(studio_obj):
     vector_size = 23

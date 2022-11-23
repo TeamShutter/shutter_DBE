@@ -402,7 +402,7 @@ class StudioRecommendView(APIView):
                 color_list = request.GET.getlist('color')
                 town_list = request.GET.getlist('town')
             except:
-                return Response({"error":"parsing error"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"error":"input error"}, status=status.HTTP_400_BAD_REQUEST)
             try:
                 tags = Tag.objects.filter(name__in = mood_list)
                 choice_vector = np.zeros(shape=(23,))
@@ -410,11 +410,16 @@ class StudioRecommendView(APIView):
                     choice_vector[tag.id-1] = 10
                 for color in color_list:
                     choice_vector[int(color)+17] = 1
+<<<<<<< HEAD
                 for i in range(23):
                     if choice_vector[i] == 0:
                         choice_vector[i] = -1
             except:
                 return Response({"error":"choice vector"}, status=status.HTTP_400_BAD_REQUEST)
+=======
+            except:
+                return Response({"error":"choice vector not generated"}, status=status.HTTP_400_BAD_REQUEST)
+>>>>>>> c6557bf7b02c4f5563aaa74e3e4cd6cb7f47f0fc
             studios = Studio.objects.all()
             studios = studios.filter(town__in = town_list)
             if len(studios) == 0:
@@ -426,7 +431,11 @@ class StudioRecommendView(APIView):
                     studio.update_vector(list(studio_vector))
                 else:
                     studio_vector = np.array(studio.vector)
+<<<<<<< HEAD
                 sims.append({"name" : studio.name, "sim" : similarity(studio_vector, choice_vector)})
+=======
+                sims.append({"name" : studio.name, "sim" :similarity(studio_vector, choice_vector)})
+>>>>>>> c6557bf7b02c4f5563aaa74e3e4cd6cb7f47f0fc
             sims = sorted(sims, key=lambda x:x['sim'], reverse=True)
             try:
                 recommendation = [s['name'] for s in sims[:3]]
