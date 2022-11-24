@@ -18,6 +18,7 @@ class StudioImageSerializer(serializers.ModelSerializer):
         fields = ('id', 'url')
 class StudioSerializer(serializers.ModelSerializer):
     studio_images = StudioImageSerializer(many=True)
+
     class Meta:
         model = Studio
 

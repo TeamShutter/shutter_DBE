@@ -428,7 +428,6 @@ class StudioRecommendView(APIView):
             recommendation = [s['name'] for s in sims]
             recommended_studios = Studio.objects.filter(name__in = recommendation)
             serializer = StudioSerializer(recommended_studios, many=True)
-            serializer.is_valid()
             return Response({'data': serializer.data}, status=status.HTTP_200_OK)
         except:
             return Response({'error' : 'error'}, status=status.HTTP_400_BAD_REQUEST)
