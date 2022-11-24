@@ -4,7 +4,6 @@ from django.shortcuts import render
 
 from accounts.authenticate import JWTAuthenticationSafe
 from accounts.serializers import UserSerializer
-from accounts.models import User
 from accounts.permissions import StudioReadOnlyUserAll, UserReadOnlyStudioAll
 from photo.models import Photo
 from photo.serializers import PhotoSerializer
@@ -14,9 +13,7 @@ from .serializers import OpenedTimeSerializer, PhotographerSerializer, PlaceSeri
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
-import json
 import numpy as np
-import asyncio
 
 
 from .tools import similarity,studio_vectorize
@@ -410,16 +407,11 @@ class StudioRecommendView(APIView):
                     choice_vector[tag.id-1] = 10
                 for color in color_list:
                     choice_vector[int(color)+17] = 1
-<<<<<<< HEAD
                 for i in range(23):
                     if choice_vector[i] == 0:
                         choice_vector[i] = -1
             except:
                 return Response({"error":"choice vector"}, status=status.HTTP_400_BAD_REQUEST)
-=======
-            except:
-                return Response({"error":"choice vector not generated"}, status=status.HTTP_400_BAD_REQUEST)
->>>>>>> c6557bf7b02c4f5563aaa74e3e4cd6cb7f47f0fc
             studios = Studio.objects.all()
             studios = studios.filter(town__in = town_list)
             if len(studios) == 0:
@@ -431,25 +423,13 @@ class StudioRecommendView(APIView):
                     studio.update_vector(list(studio_vector))
                 else:
                     studio_vector = np.array(studio.vector)
-<<<<<<< HEAD
                 sims.append({"name" : studio.name, "sim" : similarity(studio_vector, choice_vector)})
-=======
-                sims.append({"name" : studio.name, "sim" :similarity(studio_vector, choice_vector)})
->>>>>>> c6557bf7b02c4f5563aaa74e3e4cd6cb7f47f0fc
             sims = sorted(sims, key=lambda x:x['sim'], reverse=True)
-            try:
-                recommendation = [s['name'] for s in sims[:3]]
-                other = [s['name'] for s in sims[3:]]
-                top3_studio = Studio.objects.filter(name__in = recommendation)
-                other_studio = Studio.objects.filter(name__in = other)
-                top3_serializer = StudioSerializer(top3_studio, many=True)
-                other_serializer = StudioSerializer(other_studio, many=True)
-                return Response({'top3':top3_serializer.data, 'other':other_serializer.data}, status=status.HTTP_200_OK)
-            except:
-                recommendation = [s['name'] for s in sims]
-                recommend_studio = Studio.objects.filter(name__in = recommendation)
-                serializer = StudioSerializer(recommend_studio, many=True)
-                return Response({"total_results":serializer.data}, status=status.HTTP_200_OK)
+            recommendation = [s['name'] for s in sims]
+            recommended_studios = Studio.objects.filter(name__in = recommendation)
+            serializer = StudioSerializer(recommended_studios, many=True)
+            serializer.is_valid()
+            return Response({'data': serializer.data}, status=status.HTTP_200_OK)
         except:
             return Response({'error' : 'error'}, status=status.HTTP_400_BAD_REQUEST)
 
