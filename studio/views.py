@@ -430,11 +430,8 @@ class StudioRecommendView(APIView):
             recommended_studios = Studio.objects.filter(name__in = recommendation)
             serializer = StudioSerializer(recommended_studios, many=True)
             print(recommended_studios)
-            data =[]
             for sim in sims:
-                for studio in serializer.data:
-                    if sim['name'] == studio['name']:
-                        data.append(studio)
+                data = [studio for studio in serializer.data if studio['name']==sim['name']]
             return Response({'data': data}, status=status.HTTP_200_OK)
         except:
             return Response({'error' : 'error'}, status=status.HTTP_400_BAD_REQUEST)
