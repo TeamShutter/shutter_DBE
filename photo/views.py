@@ -14,7 +14,6 @@ from studio.serializers import StudioSerializer
 from django.contrib.auth.models import User
 from accounts.authenticate import JWTAuthenticationSafe
 from itertools import combinations
-
 # Create your views here.
 class AllPhotoView(APIView):
     authentication_classes=[JWTAuthenticationSafe]
