@@ -394,17 +394,17 @@ class StudioRecommendView(APIView):
     def get(self, request):
         try:
             try:
-                mood_list = request.GET.getlist('tag')
+                mood_list = request.GET.getlist('tags')
                 # product_list = request.GET.get('product')
-                color_list = request.GET.getlist('color')
-                town_list = request.GET.getlist('town')
+                color_list = request.GET.getlist('colors')
+                town_list = request.GET.getlist('towns')
             except:
                 return Response({"error":"input error"}, status=status.HTTP_400_BAD_REQUEST)
             try:
                 tags = Tag.objects.filter(name__in = mood_list)
                 choice_vector = np.zeros(shape=(23,))
                 for tag in tags:
-                    choice_vector[tag.id-1] = 10
+                    choice_vector[tag.id-1] = 1
                 for color in color_list:
                     choice_vector[int(color)+17] = 1
                 for i in range(23):
@@ -425,10 +425,17 @@ class StudioRecommendView(APIView):
                     studio_vector = np.array(studio.vector)
                 sims.append({"name" : studio.name, "sim" : similarity(studio_vector, choice_vector)})
             sims = sorted(sims, key=lambda x:x['sim'], reverse=True)
+            print(sims)
             recommendation = [s['name'] for s in sims]
             recommended_studios = Studio.objects.filter(name__in = recommendation)
             serializer = StudioSerializer(recommended_studios, many=True)
-            return Response({'data': serializer.data}, status=status.HTTP_200_OK)
+            print(recommended_studios)
+            data =[]
+            for sim in sims:
+                for studio in serializer.data:
+                    if sim['name'] == studio['name']:
+                        data.append(studio)
+            return Response({'data': data}, status=status.HTTP_200_OK)
         except:
             return Response({'error' : 'error'}, status=status.HTTP_400_BAD_REQUEST)
 
