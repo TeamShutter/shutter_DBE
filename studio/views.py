@@ -367,12 +367,13 @@ class FollowStudio(APIView):
             follow_list = studio.follow_set.filter(user = user)
             follow = 0
             if follow_list.count() > 0:
-                studio.like_set.get(user=user).delete()
+                studio.follow_set.get(user=user).delete()
             else :
                 Follow.objects.create(user=user, studio=studio)
                 follow += 1
             return Response({'follow' : follow, 'success' : "follow studio"}, status=status.HTTP_200_OK)
-        except:
+        except Exception as e:
+            print(e)
             return Response({"error": "failed to follow studio"}, status=status.HTTP_400_BAD_REQUEST)
 
 class TownView(APIView):
