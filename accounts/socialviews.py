@@ -11,11 +11,12 @@ from django.http import JsonResponse
 import requests
 from rest_framework import status
 from json.decoder import JSONDecodeError
-
+import json
 from accounts.serializers import UserSerializer
 state = getattr(settings, 'STATE')
 
-BASE_URL = 'http://localhost:3000/'
+BASE_URL = 'https://takeshutter.co.kr/'
+# BASE_URL = 'http://localhost:3000/'
 KAKAO_CALLBACK_URI = BASE_URL + 'kakaologin'
 
 def kakao_login(request):
@@ -65,53 +66,38 @@ def kakao_callback(request):
             return JsonResponse({'err_msg': 'no matching social type'}, status=status.HTTP_400_BAD_REQUEST)
         # 기존에 Google로 가입된 유저
         data = {'access_token': access_token, 'code': code}
-        print(data)
-        accept = requests.post(
-            "http://127.0.0.1:8000/accounts/kakao/login/finish/", data=data)
-        accept_status = accept.status_code
-        if accept_status != 200:
-            return JsonResponse({'err_msg': 'failed to signin'}, status=accept_status)
-        accept_json = accept.json()
-        accept_json['user']['username'] = email.split('@')[0]
-        serializer = UserSerializer(user)
-        print(serializer.data)
-        res = JsonResponse(accept_json)
-        res.set_cookie('access_token', value=accept_json['access_token'], httponly=True)
-        res.set_cookie('refresh_token', value=accept_json['refresh_token'], httponly=True)
+        try:
+            accept = requests.post(
+                "https://api.takeshutter.co.kr/accounts/kakao/login/finish/", data=data)
+        except:
+            return print("failed to post to url")
+        try:
+            accept_status = accept.status_code
+            if accept_status != 200:
+                return JsonResponse({'err_msg': 'failed to signin'}, status=accept_status)
+            accept_json = accept.json()
+            accept_json['user']['username'] = email.split('@')[0]
+        except:
+            return print("accept is not validated")
+        try:
+            res = JsonResponse(accept_json)
+            res.set_cookie('access_token', value=accept_json['access_token'], httponly=True)
+            res.set_cookie('refresh_token', value=accept_json['refresh_token'], httponly=True)
+        except:
+            return print("respond setting failed")
         return res
     except User.DoesNotExist:
         # 기존에 가입된 유저가 없으면 새로 가입
-        # data = {'access_token': access_token, 'code': code}
-        # accept = requests.post(
-        #     "http://127.0.0.1:8000/accounts/kakao/login/finish/", data=data)
-        # accept_status = accept.status_code
-        # if accept_status != 200:
-        #     return JsonResponse({'err_msg': 'failed to signup'}, status=accept_status)
-        # # user의 pk, email, first name, last name과 Access Token, Refresh token 가져옴
-        # accept_json = accept.json()
-        # res = JsonResponse(accept_json)
-        # return res    
-	        # 데이터베이스에 이미 저장되어있는 회원이면, user에 회원 저장
-            if User.objects.filter(email=email).exists():
-                user = User.objects.get(email=email)
-            # 회원가입인 경우
-            else:
-                user = User.objects.create(
-                    email=email,
-                    username="한우현"
-                )
-                user.save()
-
-            # 토큰 발행
-            # payload = JWT_PAYLOAD_HANDLER(user)
-            # jwt_token = JWT_ENCODE_HANDLER(payload)
-
-            response = {
-                'success' : True, 
-                'token' : access_token
-            }
-
-            return JsonResponse(response)
+        data = {'access_token': access_token, 'code': code}
+        accept = requests.post(
+            "https://api.takeshutter.co,kr/accounts/kakao/login/finish/", data=data)
+        accept_status = accept.status_code
+        if accept_status != 200:
+            return JsonResponse({'err_msg': 'failed to signup'}, status=accept_status)
+        # user의 pk, email, first name, last name과 Access Token, Refresh token 가져옴
+        accept_json = accept.json()
+        res = JsonResponse(accept_json)
+        return res
 
 class KakaoLoginView(SocialLoginView):
     adapter_class = kakao_view.KakaoOAuth2Adapter

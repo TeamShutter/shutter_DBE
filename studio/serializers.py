@@ -19,6 +19,7 @@ class StudioImageSerializer(serializers.ModelSerializer):
         
 class StudioSerializer(serializers.ModelSerializer):
     studio_images = StudioImageSerializer(many=True)
+
     class Meta:
         model = Studio
         fields = ('id', 'name', 'thumbnail', 'description', 'studio_images', 'phone', 'naver_link','instagram_link','open_time', 'close_time', 'address', 'town', 'follow_users')

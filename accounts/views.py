@@ -9,8 +9,11 @@ from accounts.authenticate import JWTAuthenticationSafe
 from accounts.models import User
 from .serializers import SignUpSerializer, LogInSerializer, LogOutSerializer, UserSerializer
 
+from photo.models import Like, Photo
+from photo.serializers import PhotoSerializer
 
-
+from studio.models import Follow,Studio
+from studio.serializers import StudioSerializer
 
 class SignUpView(generics.GenericAPIView):
     authentication_classes = []
@@ -70,9 +73,15 @@ class LoadUserView(APIView):
     def get(self, request):
         try:
             user = request.user
-            user = UserSerializer(user)
+            follow = Follow.objects.filter(user=user)
+            like = Like.objects.filter(user=user)
+            follow_studio = Studio.objects.filter(follow__in=follow)
+            like_photo = Photo.objects.filter(like__in=like)
+            studio_serializer = StudioSerializer(follow_studio, many=True)
+            photo_serializer = PhotoSerializer(like_photo, many=True)
+            user_serializer = UserSerializer(user)
             return Response(
-                {'user': user.data},
+                {'user_profile': user_serializer.data, 'photo': photo_serializer.data, 'studio': studio_serializer.data},
                 status=status.HTTP_200_OK
             )
 
@@ -100,3 +109,5 @@ class UserGroupView(generics.GenericAPIView):
             return Response({'success': "user group assigned"}, status=status.HTTP_200_OK)
         except:
             return Response({"error": "failed to assign group"}, status=status.HTTP_400_BAD_REQUEST)
+
+

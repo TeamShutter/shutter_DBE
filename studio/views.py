@@ -3,17 +3,20 @@ from django.views.generic import View
 from django.shortcuts import render
 
 from accounts.authenticate import JWTAuthenticationSafe
-from accounts.models import User
+from accounts.serializers import UserSerializer
 from accounts.permissions import StudioReadOnlyUserAll, UserReadOnlyStudioAll
 from photo.models import Photo
 from photo.serializers import PhotoSerializer
 from .models import AssignedTime, Follow, OpenedTime, Photographer, Place, Review, Studio, Product
+from tags.models import Tag
 from .serializers import OpenedTimeSerializer, PhotographerSerializer, PlaceSerializer, ReviewSerializer, StudioSerializer, ProductSerializer, AssignedTimeSerializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
-import json
+import numpy as np
 
+
+from .tools import similarity,studio_vectorize
 
 
 class AllProductView(APIView):
@@ -369,12 +372,13 @@ class FollowStudio(APIView):
             follow_list = studio.follow_set.filter(user = user)
             follow = 0
             if follow_list.count() > 0:
-                studio.like_set.get(user=user).delete()
+                studio.follow_set.get(user=user).delete()
             else :
                 Follow.objects.create(user=user, studio=studio)
                 follow += 1
             return Response({'follow' : follow, 'success' : "follow studio"}, status=status.HTTP_200_OK)
-        except:
+        except Exception as e:
+            print(e)
             return Response({"error": "failed to follow studio"}, status=status.HTTP_400_BAD_REQUEST)
 
 class TownView(APIView):
@@ -390,3 +394,59 @@ class TownView(APIView):
             return Response({'data' : town})
         except:
             return Response({"error": "failed to get town"}, status=status.HTTP_400_BAD_REQUEST)
+
+class StudioRecommendView(APIView):
+    authentication_classes=[JWTAuthenticationSafe]
+    def get(self, request):
+        try:
+            try:
+                mood_list = request.GET.getlist('tags')
+                # product_list = request.GET.get('product')
+                color_list = request.GET.getlist('colors')
+                town_list = request.GET.getlist('towns')
+            except:
+                return Response({"error":"input error"}, status=status.HTTP_400_BAD_REQUEST)
+            try:
+                tags = Tag.objects.filter(name__in = mood_list)
+                choice_vector = np.zeros(shape=(23,))
+                for tag in tags:
+                    choice_vector[tag.id-1] = 1
+                for color in color_list:
+                    choice_vector[int(color)+17] = 1
+                for i in range(23):
+                    if choice_vector[i] == 0:
+                        choice_vector[i] = -1
+            except:
+                return Response({"error":"choice vector"}, status=status.HTTP_400_BAD_REQUEST)
+            studios = Studio.objects.all()
+            studios = studios.filter(town__in = town_list)
+            if len(studios) == 0:
+                return Response({'result':'no matching studio'}, status=status.HTTP_200_OK)
+            sims = []
+            for studio in studios:
+                if studio.vector == []:
+                    studio_vector = studio_vectorize(studio)
+                    studio.update_vector(list(studio_vector))
+                else:
+                    studio_vector = np.array(studio.vector)
+                sims.append({"name" : studio.name, "sim" : similarity(studio_vector, choice_vector)})
+            sims = sorted(sims, key=lambda x:x['sim'], reverse=True)
+            print(sims)
+            recommendation = [s['name'] for s in sims]
+            recommended_studios = Studio.objects.filter(name__in = recommendation)
+            serializer = StudioSerializer(recommended_studios, many=True)
+            print(recommended_studios)
+            data =[]
+            for sim in sims:
+                for studio in serializer.data:
+                    if sim['name'] == studio['name']:
+                        data.append(studio) 
+            return Response({'data': data}, status=status.HTTP_200_OK)
+        except:
+            return Response({'error' : 'error'}, status=status.HTTP_400_BAD_REQUEST)
+
+    def post(self, request):
+        data=request.data
+        user=request.user
+        serializer = UserSerializer(user, data=data, partial=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

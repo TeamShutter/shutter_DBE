@@ -9,9 +9,15 @@ class Tag(models.Model):
     def __str__(self):
         return(f"{self.name}")
 
+    class Meta:
+        db_table = "tag"
+
 class PhotoTag(models.Model):
     photo = models.ForeignKey(Photo, on_delete=models.CASCADE)
     tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
 
     def __str__(self):
         return(f"{self.photo}_{self.tag}")
+
+    class Meta:
+        db_table = "photo_tag"

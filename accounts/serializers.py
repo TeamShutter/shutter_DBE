@@ -54,6 +54,9 @@ class LogInSerializer(serializers.ModelSerializer):
             'tokens': user.tokens
         }
 
+# class KaKaoLoginSerializer(serializers.Serializer):
+
+
 class LogOutSerializer(serializers.Serializer):
     refresh = serializers.CharField()
 
@@ -71,4 +74,4 @@ class LogOutSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id','email', 'groups']
+        fields = ['id','email', 'groups', 'username']

@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import AllStudioReview, AllStudioView, FollowStudio, StudioReview, StudioView
 from reservation.views import AllStudioReservationView, StudioReservationView
-from .views import AllPlaceView, AllAssignedTimeView, AllPhotographerView, PhotographerView, AllProductView, PlaceView, ProductView, AllOpenedTimeView, OpenedTimeView
+from .views import AllPlaceView, AllAssignedTimeView, AllPhotographerView, PhotographerView, AllProductView, PlaceView, ProductView, AllOpenedTimeView, OpenedTimeView, StudioRecommendView
 # from rest_framework.urlpatterns import format_suffix_patterns
 
 app_name = 'studio'
@@ -17,11 +17,12 @@ urlpatterns = [
     path('<int:studio_id>/photographer/', AllPhotographerView.as_view(), name='photographer_list'),
     path('<int:studio_id>/photographer/<int:id>/', PhotographerView.as_view(), name='photographer'),
     path('<int:studio_id>/reservation/', AllStudioReservationView.as_view(), name='studio_reservation_list'),
-    path('<int:studio_id>/reservation/<int:id>/', StudioReservationView.as_view(), name='studio_reservation'),
+    path('<int:studio_id>/reservation/<int:reservation_id>/', StudioReservationView.as_view(), name='studio_reservation'),
     path('<int:studio_id>/assignedtime/', AllAssignedTimeView.as_view(), name='assigned_time_list'),
     # path('assignedtime/<int:id>/', AssignedTimeView.as_view(), name='assigned_time'),
     path('<int:studio_id>/review/', AllStudioReview.as_view(), name='studio_review_list'),
     path('<int:studio_id>/review/<int:id>/', StudioReview.as_view(), name='studio_review'),
     path('<int:studio_id>/follow/', FollowStudio.as_view(), name='follow_studio'),
+    path("recommend/", StudioRecommendView.as_view(), name='studio_recommendation'),
 ]
 
