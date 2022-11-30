@@ -15,7 +15,7 @@ import json
 from accounts.serializers import UserSerializer
 state = getattr(settings, 'STATE')
 
-BASE_URL = 'http://localhost:3000/'
+BASE_URL = 'https://takeshutter.co.kr/'
 KAKAO_CALLBACK_URI = BASE_URL + 'kakaologin'
 
 def kakao_login(request):
