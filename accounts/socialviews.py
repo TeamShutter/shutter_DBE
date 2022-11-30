@@ -60,40 +60,43 @@ def kakao_callback(request):
         # 기존에 가입된 유저의 Provider가 kakao가 아니면 에러 발생, 맞으면 로그인
         # 다른 SNS로 가입된 유저
         social_user = SocialAccount.objects.get(user=user)
-        print(social_user)
         if social_user is None:
             return JsonResponse({'err_msg': 'email exists but not social user'}, status=status.HTTP_400_BAD_REQUEST)
         if social_user.provider != 'kakao':
             return JsonResponse({'err_msg': 'no matching social type'}, status=status.HTTP_400_BAD_REQUEST)
         # 기존에 Google로 가입된 유저
         data = {'access_token': access_token, 'code': code}
-        print(data)
-        accept = requests.post(
-            "http://127.0.0.1:8000/accounts/kakao/login/finish/", data=data)
-        accept_status = accept.status_code
-        if accept_status != 200:
-            return JsonResponse({'err_msg': 'failed to signin'}, status=accept_status)
-        accept_json = accept.json()
-        accept_json['user']['username'] = email.split('@')[0]
-
-        res = JsonResponse(accept_json)
-        res.set_cookie('access_token', value=accept_json['access_token'], httponly=True)
-        res.set_cookie('refresh_token', value=accept_json['refresh_token'], httponly=True)
+        try:
+            accept = requests.post(
+                "https://api.takeshutter.co.kr/accounts/kakao/login/finish/", data=data)
+        except:
+            return print("failed to post to url")
+        try:
+            accept_status = accept.status_code
+            if accept_status != 200:
+                return JsonResponse({'err_msg': 'failed to signin'}, status=accept_status)
+            accept_json = accept.json()
+            accept_json['user']['username'] = email.split('@')[0]
+        except:
+            return print("accept is not validated")
+        try:
+            res = JsonResponse(accept_json)
+            res.set_cookie('access_token', value=accept_json['access_token'], httponly=True)
+            res.set_cookie('refresh_token', value=accept_json['refresh_token'], httponly=True)
+        except:
+            return print("respond setting failed")
         return res
     except User.DoesNotExist:
         # 기존에 가입된 유저가 없으면 새로 가입
         data = {'access_token': access_token, 'code': code}
         accept = requests.post(
-            "http://127.0.0.1:8000/accounts/kakao/login/finish/", data=data)
+            "https://api.takeshutter.co,kr/accounts/kakao/login/finish/", data=data)
         accept_status = accept.status_code
         if accept_status != 200:
             return JsonResponse({'err_msg': 'failed to signup'}, status=accept_status)
         # user의 pk, email, first name, last name과 Access Token, Refresh token 가져옴
-        print(f"accept : {accept}")
-        print(f"type: {type(accept)}")
         accept_json = accept.json()
         res = JsonResponse(accept_json)
-        print(res.json())
         return res
 
 class KakaoLoginView(SocialLoginView):
