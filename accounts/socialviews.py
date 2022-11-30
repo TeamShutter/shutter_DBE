@@ -16,6 +16,7 @@ from accounts.serializers import UserSerializer
 state = getattr(settings, 'STATE')
 
 BASE_URL = 'https://takeshutter.co.kr/'
+# BASE_URL = 'http://localhost:3000/'
 KAKAO_CALLBACK_URI = BASE_URL + 'kakaologin'
 
 def kakao_login(request):
@@ -51,7 +52,6 @@ def kakao_callback(request):
     """
     # print(kakao_account)
     email = kakao_account.get('email')
-    print(email)
     """
     Signup or Signin Request
     """
