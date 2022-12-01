@@ -215,3 +215,7 @@ SIMPLE_JWT = {
 CSRF_TRUSTED_ORIGINS = ['https://*.api.takeshutter.co.kr/','http://*.127.0.0.1']
 
 SITE_ID = 1
+
+# Nginx Statie File Setting
+ROOT_DIR = os.path.dirname(BASE_DIR)
+STATIC_ROOT = os.path.join(ROOT_DIR, '.static_root')
