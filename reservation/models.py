@@ -14,6 +14,7 @@ class Reservation(models.Model):
     assigned_time = models.ForeignKey(AssignedTime, null = True, blank=True, on_delete=models.CASCADE)
     description = models.CharField(max_length=150, default="reservation_description")
     state = models.IntegerField(choices=STATE_CHOICES, default = 1)
+    rank = models.IntegerField(blank=True, null=True)
     created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):

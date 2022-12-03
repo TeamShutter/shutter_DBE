@@ -74,4 +74,4 @@ class LogOutSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id','email', 'groups', 'username']
+        fields = ['id','email','username', "phone"]
