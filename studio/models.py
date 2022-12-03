@@ -100,8 +100,7 @@ class Photographer(models.Model):
 class AssignedTime(models.Model): 
     photographer = models.ForeignKey(Photographer, null=True, blank=True, on_delete=models.CASCADE)
     opened_time = models.ForeignKey(OpenedTime, null=True, blank=True, on_delete=models.CASCADE)
-    # if photographer is not available, is_absence is True.
-    is_available = models.BooleanField(default=False)
+    is_available = models.BooleanField(default=True)
 
     def __str__(self):
         return(f"open_{self.opened_time}_assigned_{self.photographer.name}")

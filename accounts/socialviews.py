@@ -69,34 +69,37 @@ def kakao_callback(request):
         try:
             accept = requests.post(
                 "https://api.takeshutter.co.kr/accounts/kakao/login/finish/", data=data)
-        except:
-            return print("failed to post to url")
+        except Exception as e:
+            return JsonResponse({"error": f"{e}"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
         try:
             accept_status = accept.status_code
             if accept_status != 200:
                 return JsonResponse({'err_msg': 'failed to signin'}, status=accept_status)
             accept_json = accept.json()
             accept_json['user']['username'] = email.split('@')[0]
-        except:
-            return print("accept is not validated")
+        except Exception as e:
+            return JsonResponse({"error": f"{e}"}, status=status.HTTP_404_NOT_FOUND)
         try:
             res = JsonResponse(accept_json)
+            print("RES", res)
             res.set_cookie('access_token', value=accept_json['access_token'], httponly=True)
             res.set_cookie('refresh_token', value=accept_json['refresh_token'], httponly=True)
-        except:
-            return print("respond setting failed")
+        except Exception as e:
+            return JsonResponse({"error": f"{e}"}, status=status.HTTP_409_CONFLICT)
+    
         return res
     except User.DoesNotExist:
         # 기존에 가입된 유저가 없으면 새로 가입
         data = {'access_token': access_token, 'code': code}
         accept = requests.post(
-            "https://api.takeshutter.co,kr/accounts/kakao/login/finish/", data=data)
+            "https://api.takeshutter.co.kr/accounts/kakao/login/finish/", data=data)
         accept_status = accept.status_code
         if accept_status != 200:
             return JsonResponse({'err_msg': 'failed to signup'}, status=accept_status)
         # user의 pk, email, first name, last name과 Access Token, Refresh token 가져옴
         accept_json = accept.json()
         res = JsonResponse(accept_json)
+        print(res)
         return res
 
 class KakaoLoginView(SocialLoginView):

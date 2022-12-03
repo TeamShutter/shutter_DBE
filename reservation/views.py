@@ -4,10 +4,11 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from accounts.models import User
 from accounts.permissions import UserReadOnlyStudioAll
+import rest_framework
 import reservation
 from reservation import serializers
 from reservation.serializers import ReservationSerializer
-from studio.models import AssignedTime, OpenedTime, Photographer, Place, Product, Studio
+from studio.models import AssignedTime, Place, Product, Studio
 from reservation.models import Reservation
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -17,8 +18,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 
 
+# @csrf_exempt
 class AllStudioReservationView(APIView):
-    permission_classes = [UserReadOnlyStudioAll]
+    permission_classes = [rest_framework.permissions.IsAuthenticated]
     def get(self, request, studio_id): 
         try:
             studio = Studio.objects.get(id=studio_id)
@@ -43,6 +45,7 @@ class AllStudioReservationView(APIView):
     
     def post(self, request, studio_id):
         try:
+<<<<<<< HEAD
             print('a')
             user = request.user # 이거 포토그래퍼 아이디를 user에서 왜 가져오는건지 모르겠음! 수정해야할 듯.
             print('b')
@@ -54,8 +57,24 @@ class AllStudioReservationView(APIView):
             reservation.assigned_time.update_available()
             serializer = ReservationSerializer(reservation)
             return Response({'data' : serializer.data, 'success' : 'post reservation'})
+=======
+            user = request.user
+            print(request.data)
+            for req in request.data:
+                print(studio_id)
+                assigned_time_id = request.data.get(f"{req}").get("assigned_time_id")
+                product_id = request.data.get(req).get("product_id")
+                assigned_time = AssignedTime.objects.get(id=assigned_time_id)
+                product = Product.objects.get(id=product_id)
+                reservation = Reservation.objects.create(user = user,assigned_time=assigned_time, product=product)
+                reservation.assigned_time.update_available()
+                serializers = ReservationSerializer(reservation)
+                print(serializers.data)
+            return Response({'success' : 'reservation created!'}, status=status.HTTP_201_CREATED)
+>>>>>>> ffb224775071ee86ac212eb1d2c53c0ce0d9ba9c
         
-        except:
+        except Exception as e:
+            print(e)
             return Response({'error' : 'post reservation'}, status=status.HTTP_400_BAD_REQUEST)      
 
 class StudioReservationView(APIView):
@@ -85,4 +104,20 @@ class StudioReservationView(APIView):
         
         except:
             return Response({'error' : 'patch reservation'}, status=status.HTTP_404_NOT_FOUND)
+    
+class AllAdminReservationView(APIView):
+    # permission_classes = [rest_framework.permissions.IsAdminUser]
+    def get(self, request):
+        all_reservations = Reservation.objects.all()
+        reservation_ser = ReservationSerializer(all_reservations, many=True)
+        return Response({"data":reservation_ser.data}, status=status.HTTP_200_OK)
+
+class AdminReservationView(APIView):
+    # permission_classes = [rest_framework.permissions.IsAdminUser]
+    def patch(self, request, reservation_id):
+        reservation = Reservation.objects.get(id=reservation_id)
+        reservation_ser = ReservationSerializer(reservation, data=request.data, partial=True)
+        reservation_ser.is_valid()
+        reservation_ser.save()
+        return Response({"data":reservation_ser.data}, status=status.HTTP_200_OK)
     

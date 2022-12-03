@@ -87,6 +87,8 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "http://takeshutter.co.kr",
     "https://takeshutter.co.kr",
+    "https://api.takeshutter.co.kr",
+    "https://api.takeshutter.co.kr",
     "http://localhost:3000",
 ]
 CORS_ALLOW_HEADERS = [
@@ -212,7 +214,7 @@ SIMPLE_JWT = {
 }
 
 
-CSRF_TRUSTED_ORIGINS = ['https://*.api.takeshutter.co.kr/','http://*.127.0.0.1']
+CSRF_TRUSTED_ORIGINS = ['https://*.api.takeshutter.co.kr/','http://*.127.0.0.1', 'http://localhost:3000']
 
 SITE_ID = 1
 
