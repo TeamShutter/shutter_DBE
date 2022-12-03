@@ -69,22 +69,22 @@ def kakao_callback(request):
         try:
             accept = requests.post(
                 "https://api.takeshutter.co.kr/accounts/kakao/login/finish/", data=data)
-        except RuntimeError:
-            return print("failed to post to url")
+        except Exception as e:
+            return JsonResponse({"error": f"{e}"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
         try:
             accept_status = accept.status_code
             if accept_status != 200:
                 return JsonResponse({'err_msg': 'failed to signin'}, status=accept_status)
             accept_json = accept.json()
             accept_json['user']['username'] = email.split('@')[0]
-        except ValueError:
-            return print("accept is not validated")
+        except Exception as e:
+            return JsonResponse({"error": f"{e}"}, status=status.HTTP_404_NOT_FOUND)
         try:
             res = JsonResponse(accept_json)
             res.set_cookie('access_token', value=accept_json['access_token'], httponly=True)
             res.set_cookie('refresh_token', value=accept_json['refresh_token'], httponly=True)
-        except NameError:
-            return print("respond setting failed")
+        except Exception as e:
+            return JsonResponse({"error": f"{e}"}, status=status.HTTP_409_CONFLICT)
         return res
     except User.DoesNotExist:
         # 기존에 가입된 유저가 없으면 새로 가입

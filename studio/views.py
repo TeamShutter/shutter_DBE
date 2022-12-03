@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.views.generic import View
 from django.shortcuts import render
-
+import rest_framework
 from accounts.authenticate import JWTAuthenticationSafe
 from accounts.serializers import UserSerializer
 from accounts.permissions import StudioReadOnlyUserAll, UserReadOnlyStudioAll
@@ -204,8 +204,11 @@ class AllPhotographerView(APIView):
     def get(self, request, studio_id):
         try:
             studio = Studio.objects.get(id=studio_id)
+            print(studio)
             photographer = Photographer.objects.filter(studio=studio)
+            print(photographer)
             serializer = PhotographerSerializer(photographer, many=True)
+            print(serializer.data)
             return Response({"data": serializer.data, "success" : "get all photographer"})
         
         except:
@@ -257,14 +260,14 @@ class PhotographerView(APIView):
 
 
 class AllAssignedTimeView(APIView):
-    permission_classes = [UserReadOnlyStudioAll]
+    permission_classes = [rest_framework.permissions.AllowAny]
     def get(self, request, studio_id): 
         try:
             studio = Studio.objects.get(id=studio_id)
             opened_time = OpenedTime.objects.filter(studio=studio)
             assigned_time = AssignedTime.objects.filter(opened_time__in=opened_time)
             serializer = AssignedTimeSerializer(assigned_time, many=True)
-            return Response(serializer.data)
+            return Response({"data" : serializer.data})
         
         except:
             return Response(status=status.HTTP_404_NOT_FOUND)
@@ -429,7 +432,8 @@ class StudioRecommendView(APIView):
             sims = []
             print('d')
             for studio in studios:
-                if studio.vector == []:
+                if not studio.vector :
+                    print('i')
                     studio_vector = studio_vectorize(studio)
                     studio.update_vector(list(studio_vector))
                 else:
