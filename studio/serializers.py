@@ -22,13 +22,6 @@ class StudioSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Studio
-<<<<<<< HEAD
-        fields = ('id', 'name', 'thumbnail', 'description', 'studio_images', 'phone', 'naver_link','instagram_link','open_time', 'close_time', 'address', 'town', 'follow_users')
-
-
-class ProductSerializer(serializers.ModelSerializer):
-    # studio = StudioSerializer(read_only=True) #이거 없으니까 product serializer 에서 studio data가 안보였음
-=======
 
         fields = '__all__'
 
@@ -36,7 +29,6 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
->>>>>>> ffb224775071ee86ac212eb1d2c53c0ce0d9ba9c
 
     class Meta:
         model = Product
@@ -50,30 +42,18 @@ class PlaceSerializer(serializers.ModelSerializer):
     
 
 class OpenedTimeSerializer(serializers.ModelSerializer):
-<<<<<<< HEAD
-    # studio = StudioSerializer(many=True)
-=======
     studio = StudioSerializer(read_only=True)
->>>>>>> ffb224775071ee86ac212eb1d2c53c0ce0d9ba9c
 
     class Meta:
         model = OpenedTime
         fields = "__all__"
 
 class PhotographerSerializer(serializers.ModelSerializer):
-<<<<<<< HEAD
-    # studio = StudioSerializer(many=True)
-=======
     # studio = StudioSerializer()
->>>>>>> ffb224775071ee86ac212eb1d2c53c0ce0d9ba9c
 
     class Meta:
         model = Photographer
         fields = "__all__"
-<<<<<<< HEAD
-=======
-
->>>>>>> ffb224775071ee86ac212eb1d2c53c0ce0d9ba9c
 class AssignedTimeSerializer(serializers.ModelSerializer):
     photographer = PhotographerSerializer(read_only=True)
     opened_time = OpenedTimeSerializer(read_only=True)
@@ -82,10 +62,6 @@ class AssignedTimeSerializer(serializers.ModelSerializer):
     class Meta:
         model = AssignedTime
         fields = "__all__"
-<<<<<<< HEAD
-
-=======
->>>>>>> ffb224775071ee86ac212eb1d2c53c0ce0d9ba9c
 class ReviewSerializer(serializers.ModelSerializer):
     # author = UserSerializer(read_only=True)
     class Meta:

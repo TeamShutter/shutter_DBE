@@ -268,11 +268,7 @@ class AllAssignedTimeView(APIView):
             assigned_time = AssignedTime.objects.filter(opened_time__in=opened_time)
             print(assigned_time)
             serializer = AssignedTimeSerializer(assigned_time, many=True)
-<<<<<<< HEAD
             return Response({"data": serializer.data, "success" : "get assigned_time"})
-=======
-            return Response({"data" : serializer.data})
->>>>>>> ffb224775071ee86ac212eb1d2c53c0ce0d9ba9c
         
         except:
             return Response(status=status.HTTP_404_NOT_FOUND)
