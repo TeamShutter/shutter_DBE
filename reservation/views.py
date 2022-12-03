@@ -3,6 +3,7 @@ from tempfile import TemporaryFile
 from django.http import JsonResponse
 from django.shortcuts import render
 from accounts.models import User
+from accounts.serializers import UserSerializer
 from accounts.permissions import UserReadOnlyStudioAll
 import rest_framework
 import reservation
@@ -48,15 +49,22 @@ class AllStudioReservationView(APIView):
             user = request.user
             print(request.data)
             for req in request.data:
-                print(studio_id)
-                assigned_time_id = request.data.get(f"{req}").get("assigned_time_id")
-                product_id = request.data.get(req).get("product_id")
-                assigned_time = AssignedTime.objects.get(id=assigned_time_id)
-                product = Product.objects.get(id=product_id)
-                reservation = Reservation.objects.create(user = user,assigned_time=assigned_time, product=product)
-                reservation.assigned_time.update_available()
-                serializers = ReservationSerializer(reservation)
-                print(serializers.data)
+                request_key=f"{req}"
+                print(request_key)
+                print(type(request_key))
+                if request_key != "phone_num": 
+                    assigned_time_id = request.data.get(request_key).get("assigned_time_id")
+                    product_id = request.data.get(req).get("product_id")
+                    assigned_time = AssignedTime.objects.get(id=assigned_time_id)
+                    product = Product.objects.get(id=product_id)
+                    reservation = Reservation.objects.create(user = user,assigned_time=assigned_time, product=product, rank=int(request_key))
+                    reservation.assigned_time.update_available()
+                else :
+                    phone_number = request.data.get(request_key)
+                    user = request.user
+                    user.phone_update(phone_number)
+                    user_serializer = UserSerializer(user)
+                    print(user_serializer.data)
             return Response({'success' : 'reservation created!'}, status=status.HTTP_201_CREATED)
         
         except Exception as e:
@@ -93,7 +101,7 @@ class StudioReservationView(APIView):
     
 class AllAdminReservationView(APIView):
     # request.user.is_staff = True 인 유저에게만 접근 허용. admin 계정은 is_staff = True 자동으로 설정 됨.
-    permission_classes = [rest_framework.permissions.IsAdminUser]
+    # permission_classes = [rest_framework.permissions.IsAdminUser]
     def get(self, request):
         all_reservations = Reservation.objects.all()
         reservation_ser = ReservationSerializer(all_reservations, many=True)
