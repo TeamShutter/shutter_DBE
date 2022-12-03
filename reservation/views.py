@@ -45,18 +45,18 @@ class AllStudioReservationView(APIView):
     
     def post(self, request, studio_id):
         try:
-            print(1)
             user = request.user
-            print(user)
-            print(user.id)
-            user = User.objects.get(id=user.id)
-            for req in request.data.keys():
-                assigned_time_id = request.data.get(req).get("assigned_time_id")
+            print(request.data)
+            for req in request.data:
+                print(studio_id)
+                assigned_time_id = request.data.get(f"{req}").get("assigned_time_id")
                 product_id = request.data.get(req).get("product_id")
                 assigned_time = AssignedTime.objects.get(id=assigned_time_id)
                 product = Product.objects.get(id=product_id)
-                reservation = Reservation.objects.create(user = user, assigned_time=assigned_time, product=product)
+                reservation = Reservation.objects.create(user = user,assigned_time=assigned_time, product=product)
                 reservation.assigned_time.update_available()
+                serializers = ReservationSerializer(reservation)
+                print(serializers.data)
             return Response({'success' : 'reservation created!'}, status=status.HTTP_201_CREATED)
         
         except Exception as e:
@@ -90,4 +90,20 @@ class StudioReservationView(APIView):
         
         except:
             return Response({'error' : 'patch reservation'}, status=status.HTTP_404_NOT_FOUND)
+    
+class AllAdminReservationView(APIView):
+    # permission_classes = [rest_framework.permissions.IsAdminUser]
+    def get(self, request):
+        all_reservations = Reservation.objects.all()
+        reservation_ser = ReservationSerializer(all_reservations, many=True)
+        return Response({"data":reservation_ser.data}, status=status.HTTP_200_OK)
+
+class AdminReservationView(APIView):
+    # permission_classes = [rest_framework.permissions.IsAdminUser]
+    def patch(self, request, reservation_id):
+        reservation = Reservation.objects.get(id=reservation_id)
+        reservation_ser = ReservationSerializer(reservation, data=request.data, partial=True)
+        reservation_ser.is_valid()
+        reservation_ser.save()
+        return Response({"data":reservation_ser.data}, status=status.HTTP_200_OK)
     

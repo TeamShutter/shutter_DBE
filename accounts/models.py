@@ -12,6 +12,7 @@ class User(AbstractUser):
     name = models.CharField(max_length=10, default='name')
     age = models.IntegerField(null=True, blank=True)
     sex = models.CharField(max_length = 20, choices = SEX, null=True, blank=True)
+    phone = models.CharField(max_length=20, null=True, blank=True)
 
     def __str__(self):
         return(f'{self.email}')

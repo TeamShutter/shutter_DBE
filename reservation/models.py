@@ -8,7 +8,7 @@ from studio.models import AssignedTime, Place, Product, Studio
 
 # Create your models here.
 class Reservation(models.Model):
-    STATE_CHOICES = ((1, 'not_confirmed'),(2,'confirmed'),(3,'canceled'), (4, 'done'))
+    STATE_CHOICES = ((1, '예약전'),(2,'예약완료'),(3,'canceled'), (4, '입금완료'))
     user = models.ForeignKey(User, null=True, blank = True, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, null=True, blank = True, on_delete = models.CASCADE)
     assigned_time = models.ForeignKey(AssignedTime, null = True, blank=True, on_delete=models.CASCADE)
@@ -17,7 +17,7 @@ class Reservation(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return(f"{self.user.username}'s reservation : {self.id}")
+        return(f"{self.user.username}'s reservation on {self.assigned_time.opened_time.studio}")
 
     class Meta:
         db_table = "reservation"

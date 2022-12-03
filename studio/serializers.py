@@ -41,7 +41,7 @@ class PlaceSerializer(serializers.Serializer):
     
 
 class OpenedTimeSerializer(serializers.ModelSerializer):
-    # studio = StudioSerializer(many=True)
+    studio = StudioSerializer(read_only=True)
 
     class Meta:
         model = OpenedTime
