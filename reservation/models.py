@@ -8,7 +8,7 @@ from studio.models import AssignedTime, Place, Product, Studio
 
 # Create your models here.
 class Reservation(models.Model):
-    STATE_CHOICES = ((1, '예약전'),(2,'예약완료'),(3,'canceled'), (4, '입금완료'))
+    STATE_CHOICES = ((1, '예약전'),(2,'예약완료'),(3,'canceled'), (4, '입금완료'), (5, '예약반려'))
     user = models.ForeignKey(User, null=True, blank = True, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, null=True, blank = True, on_delete = models.CASCADE)
     assigned_time = models.ForeignKey(AssignedTime, null = True, blank=True, on_delete=models.CASCADE)
