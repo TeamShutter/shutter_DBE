@@ -92,14 +92,15 @@ class StudioReservationView(APIView):
             return Response({'error' : 'patch reservation'}, status=status.HTTP_404_NOT_FOUND)
     
 class AllAdminReservationView(APIView):
-    # permission_classes = [rest_framework.permissions.IsAdminUser]
+    # request.user.is_staff = True 인 유저에게만 접근 허용. admin 계정은 is_staff = True 자동으로 설정 됨.
+    permission_classes = [rest_framework.permissions.IsAdminUser]
     def get(self, request):
         all_reservations = Reservation.objects.all()
         reservation_ser = ReservationSerializer(all_reservations, many=True)
         return Response({"data":reservation_ser.data}, status=status.HTTP_200_OK)
 
 class AdminReservationView(APIView):
-    # permission_classes = [rest_framework.permissions.IsAdminUser]
+    permission_classes = [rest_framework.permissions.IsAdminUser]
     def patch(self, request, reservation_id):
         reservation = Reservation.objects.get(id=reservation_id)
         reservation_ser = ReservationSerializer(reservation, data=request.data, partial=True)
