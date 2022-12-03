@@ -81,10 +81,12 @@ def kakao_callback(request):
             return print("accept is not validated")
         try:
             res = JsonResponse(accept_json)
+            print("RES", res)
             res.set_cookie('access_token', value=accept_json['access_token'], httponly=True)
             res.set_cookie('refresh_token', value=accept_json['refresh_token'], httponly=True)
         except:
             return print("respond setting failed")
+
         return res
     except User.DoesNotExist:
         # 기존에 가입된 유저가 없으면 새로 가입
@@ -97,6 +99,7 @@ def kakao_callback(request):
         # user의 pk, email, first name, last name과 Access Token, Refresh token 가져옴
         accept_json = accept.json()
         res = JsonResponse(accept_json)
+        print(res)
         return res
 
 class KakaoLoginView(SocialLoginView):
