@@ -75,6 +75,7 @@ def kakao_callback(request):
         accept_json['user']['username'] = email.split('@')[0]
 
         res = JsonResponse(accept_json)
+        print("RES", res)
         res.set_cookie('access_token', value=accept_json['access_token'], httponly=True)
         res.set_cookie('refresh_token', value=accept_json['refresh_token'], httponly=True)
         return res
@@ -91,7 +92,7 @@ def kakao_callback(request):
         print(f"type: {type(accept)}")
         accept_json = accept.json()
         res = JsonResponse(accept_json)
-        print(res.json())
+        print(res)
         return res
 
 class KakaoLoginView(SocialLoginView):
