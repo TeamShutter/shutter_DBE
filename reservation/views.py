@@ -43,10 +43,14 @@ class AllStudioReservationView(APIView):
     
     def post(self, request, studio_id):
         try:
+            print('a')
             user = request.user # 이거 포토그래퍼 아이디를 user에서 왜 가져오는건지 모르겠음! 수정해야할 듯.
-            assigned_time = AssignedTime.objects.get(id=request.data.get('assignedtime_id')) 
-            description = request.data.get('description')
-            reservation = Reservation.objects.create(user=user, assigned_time=assigned_time, description=description)
+            print('b')
+            assigned_time = AssignedTime.objects.get(id=request.data.get('assigned_time_id')) 
+            print('c')
+            # description = request.data.get('description')
+            reservation = Reservation.objects.create(user=user, assigned_time=assigned_time)
+            print('d')
             reservation.assigned_time.update_available()
             serializer = ReservationSerializer(reservation)
             return Response({'data' : serializer.data, 'success' : 'post reservation'})

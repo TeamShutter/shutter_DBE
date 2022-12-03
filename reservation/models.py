@@ -9,8 +9,6 @@ from studio.models import AssignedTime, Place, Product, Studio
 # Create your models here.
 class Reservation(models.Model):
     STATE_CHOICES = ((1, 'not_confirmed'),(2,'confirmed'),(3,'canceled'), (4, 'done'))
-    product = models.ForeignKey(Product, null=True, blank = True, on_delete = models.CASCADE)
-    studio = models.ForeignKey(Studio, null = True, blank = True, on_delete=models.CASCADE)
     user = models.ForeignKey(User, null= True, blank=True, on_delete=models.CASCADE)
     studio = models.ForeignKey(Studio, null=True, blank=True, on_delete=models.CASCADE)
     product = models.ForeignKey(Place, null=True, blank=True, on_delete=models.CASCADE)

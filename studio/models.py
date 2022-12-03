@@ -52,7 +52,7 @@ class Place(models.Model):
 class Product(models.Model):
     studio = models.ForeignKey(Studio, null=True, blank=True, on_delete=models.CASCADE)
     name = models.CharField(max_length=100, default='product_name')
-    description = models.CharField(max_length=500, default='product_description')
+    description = models.TextField(max_length=500, default='product_description')
     price = models.IntegerField(default=10000)
     # 상품의 촬영 소요 시간, 기본설정 30분
     duration = models.IntegerField( default=30)

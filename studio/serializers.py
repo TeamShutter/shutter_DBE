@@ -30,7 +30,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ('id', 'studio', 'name', 'description', 'price', 'duration', 'created_at', 'updated_at')
+        fields = "__all__"
 
 class PlaceSerializer(serializers.ModelSerializer):
 
@@ -44,23 +44,22 @@ class OpenedTimeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OpenedTime
-        fields = ('studio', 'date', 'hour', 'minute')
+        fields = "__all__"
 
 class PhotographerSerializer(serializers.ModelSerializer):
     # studio = StudioSerializer(many=True)
 
     class Meta:
         model = Photographer
-        fields = ('studio', 'name')
-
+        fields = "__all__"
 class AssignedTimeSerializer(serializers.ModelSerializer):
-    # photographer = PhotographerSerializer(many=True) 이부분 어떡하지??..
-    # openedTime = OpenedTimeSerializer(many=True)
+    photographer = PhotographerSerializer(read_only=True)
+    opened_time = OpenedTimeSerializer(read_only=True)
     # is_absence = serializers.BooleanField(default=False)
 
     class Meta:
         model = AssignedTime
-        fields = ('studio', 'product', 'is_absence')
+        fields = "__all__"
 
 class ReviewSerializer(serializers.ModelSerializer):
     # author = UserSerializer(read_only=True)
