@@ -87,6 +87,8 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "http://takeshutter.co.kr",
     "https://takeshutter.co.kr",
+    "https://api.takeshutter.co.kr",
+    "https://api.takeshutter.co.kr",
     "http://localhost:3000",
 ]
 CORS_ALLOW_HEADERS = [
