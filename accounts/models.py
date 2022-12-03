@@ -24,3 +24,7 @@ class User(AbstractUser):
             'access': str(refresh.access_token)
         }
 
+    def phone_update(self, phone_number):
+        self.phone = phone_number
+        self.save()
+        return 
