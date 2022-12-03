@@ -18,6 +18,7 @@ state = getattr(settings, 'STATE')
 BASE_URL = 'https://takeshutter.co.kr/'
 # BASE_URL = 'http://localhost:3000/'
 KAKAO_CALLBACK_URI = BASE_URL + 'kakaologin'
+KAKAO_BE_CALLBACK_URI = 'https://api.takeshutter.co.kr/accounts/kakao/login/callback/'
 
 def kakao_login(request):
     rest_api_key = getattr(settings, 'KAKAO_REST_API_KEY')
@@ -31,7 +32,7 @@ def kakao_callback(request):
     Access Token Request
     """
     token_req = requests.get(
-        f"https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id={rest_api_key}&redirect_uri={KAKAO_CALLBACK_URI}&code={code}")
+        f"https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id={rest_api_key}&redirect_uri={KAKAO_BE_CALLBACK_URI}&code={code}")
     token_req_json = token_req.json()
     error = token_req_json.get("error")
     if error is not None:
@@ -81,10 +82,12 @@ def kakao_callback(request):
             return JsonResponse({"error": f"{e}"}, status=status.HTTP_404_NOT_FOUND)
         try:
             res = JsonResponse(accept_json)
+            print("RES", res)
             res.set_cookie('access_token', value=accept_json['access_token'], httponly=True)
             res.set_cookie('refresh_token', value=accept_json['refresh_token'], httponly=True)
         except Exception as e:
             return JsonResponse({"error": f"{e}"}, status=status.HTTP_409_CONFLICT)
+    
         return res
     except User.DoesNotExist:
         # 기존에 가입된 유저가 없으면 새로 가입
@@ -97,6 +100,7 @@ def kakao_callback(request):
         # user의 pk, email, first name, last name과 Access Token, Refresh token 가져옴
         accept_json = accept.json()
         res = JsonResponse(accept_json)
+        print(res)
         return res
 
 class KakaoLoginView(SocialLoginView):
