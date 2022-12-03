@@ -22,17 +22,16 @@ class StudioSerializer(serializers.ModelSerializer):
     class Meta:
         model = Studio
 
-        fields = ('__all__')
+        fields = '__all__'
 
 
 
 
-class ProductSerializer(serializers.Serializer):
-    # studio = StudioSerializer(read_only=True)  이거 들어가면 안되는데 왜 그런거지??..
+class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ('studio', 'name', 'description', 'price', 'duration', 'created_at', 'updated_at')
+        fields = "__all__"
 
 class PlaceSerializer(serializers.Serializer):
 
@@ -41,29 +40,28 @@ class PlaceSerializer(serializers.Serializer):
         fileds = ('studio', 'name', 'description', 'address')
     
 
-class OpenedTimeSerializer(serializers.Serializer):
+class OpenedTimeSerializer(serializers.ModelSerializer):
     # studio = StudioSerializer(many=True)
 
     class Meta:
         model = OpenedTime
-        fields = ('studio', 'date', 'hour', 'minute')
+        fields = "__all__"
 
-class PhotographerSerializer(serializers.Serializer):
-    # studio = StudioSerializer(many=True)
+class PhotographerSerializer(serializers.ModelSerializer):
+    # studio = StudioSerializer()
 
     class Meta:
         model = Photographer
-        fields = ('studio', 'name')
+        fields = "__all__"
 
-class AssignedTimeSerializer(serializers.Serializer):
-    # photographer = PhotographerSerializer(many=True) 이부분 어떡하지??..
-    # openedTime = OpenedTimeSerializer(many=True)
+class AssignedTimeSerializer(serializers.ModelSerializer):
+    photographer = PhotographerSerializer(read_only=True)
+    opened_time = OpenedTimeSerializer(read_only=True)
     # is_absence = serializers.BooleanField(default=False)
 
     class Meta:
         model = AssignedTime
-        fields = ('studio', 'product', 'is_absence')
-
+        fields = "__all__"
 class ReviewSerializer(serializers.ModelSerializer):
     # author = UserSerializer(read_only=True)
     class Meta:

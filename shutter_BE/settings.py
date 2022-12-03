@@ -214,7 +214,7 @@ SIMPLE_JWT = {
 }
 
 
-CSRF_TRUSTED_ORIGINS = ['https://*.api.takeshutter.co.kr/','http://*.127.0.0.1']
+CSRF_TRUSTED_ORIGINS = ['https://*.api.takeshutter.co.kr/','http://*.127.0.0.1', 'http://localhost:3000']
 
 SITE_ID = 1
 

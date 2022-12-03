@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.views.generic import View
 from django.shortcuts import render
-
+import rest_framework
 from accounts.authenticate import JWTAuthenticationSafe
 from accounts.serializers import UserSerializer
 from accounts.permissions import StudioReadOnlyUserAll, UserReadOnlyStudioAll
@@ -204,8 +204,11 @@ class AllPhotographerView(APIView):
     def get(self, request, studio_id):
         try:
             studio = Studio.objects.get(id=studio_id)
+            print(studio)
             photographer = Photographer.objects.filter(studio=studio)
+            print(photographer)
             serializer = PhotographerSerializer(photographer, many=True)
+            print(serializer.data)
             return Response({"data": serializer.data, "success" : "get all photographer"})
         
         except:
@@ -257,14 +260,14 @@ class PhotographerView(APIView):
 
 
 class AllAssignedTimeView(APIView):
-    permission_classes = [UserReadOnlyStudioAll]
+    permission_classes = [rest_framework.permissions.AllowAny]
     def get(self, request, studio_id): 
         try:
             studio = Studio.objects.get(id=studio_id)
             opened_time = OpenedTime.objects.filter(studio=studio)
             assigned_time = AssignedTime.objects.filter(opened_time__in=opened_time)
             serializer = AssignedTimeSerializer(assigned_time, many=True)
-            return Response(serializer.data)
+            return Response({"data" : serializer.data})
         
         except:
             return Response(status=status.HTTP_404_NOT_FOUND)
@@ -394,6 +397,7 @@ class StudioRecommendView(APIView):
     authentication_classes=[JWTAuthenticationSafe]
     def get(self, request):
         try:
+            print('a')
             try:
                 mood_list = request.GET.getlist('tags')
                 # product_list = request.GET.get('product')
@@ -401,6 +405,7 @@ class StudioRecommendView(APIView):
                 town_list = request.GET.getlist('towns')
             except:
                 return Response({"error":"input error"}, status=status.HTTP_400_BAD_REQUEST)
+            print('b')
             try:
                 tags = Tag.objects.filter(name__in = mood_list)
                 choice_vector = np.zeros(shape=(23,))
@@ -411,31 +416,45 @@ class StudioRecommendView(APIView):
                 for i in range(23):
                     if choice_vector[i] == 0:
                         choice_vector[i] = -1
+                print('c')
             except:
                 return Response({"error":"choice vector"}, status=status.HTTP_400_BAD_REQUEST)
-            studios = Studio.objects.all()
-            studios = studios.filter(town__in = town_list)
+            try:
+                studios = Studio.objects.all()
+                studios = studios.filter(town__in = town_list)
+                print('k')
+                print(studios)
+            except:
+                return Response({"error": "failed to filter studios"}, status=status.HTTP_400_BAD_REQUEST)
             if len(studios) == 0:
                 return Response({'result':'no matching studio'}, status=status.HTTP_200_OK)
+            print('j')
             sims = []
+            print('d')
             for studio in studios:
-                if studio.vector == []:
+                if not studio.vector :
+                    print('i')
                     studio_vector = studio_vectorize(studio)
                     studio.update_vector(list(studio_vector))
                 else:
                     studio_vector = np.array(studio.vector)
                 sims.append({"name" : studio.name, "sim" : similarity(studio_vector, choice_vector)})
-            sims = sorted(sims, key=lambda x:x['sim'], reverse=True)
-            print(sims)
-            recommendation = [s['name'] for s in sims]
-            recommended_studios = Studio.objects.filter(name__in = recommendation)
-            serializer = StudioSerializer(recommended_studios, many=True)
-            print(recommended_studios)
-            data =[]
-            for sim in sims:
-                for studio in serializer.data:
-                    if sim['name'] == studio['name']:
-                        data.append(studio) 
+            print('e')
+            try:
+                sims = sorted(sims, key=lambda x:x['sim'], reverse=True)
+                recommendation = [s['name'] for s in sims]
+                recommended_studios = Studio.objects.filter(name__in = recommendation)
+                serializer = StudioSerializer(recommended_studios, many=True)
+            except Exception as e:
+                return Response({"error": "failed to sort studio."}, status=status.HTTP_400_BAD_REQUEST)
+            try:
+                data =[]
+                for sim in sims:
+                    for studio in serializer.data:
+                        if sim['name'] == studio['name']:
+                            data.append(studio) 
+            except:
+                return Response({'error': "failed to rearrange data"}, status=status.HTTP_400_BAD_REQUEST)
             return Response({'data': data}, status=status.HTTP_200_OK)
         except:
             return Response({'error' : 'error'}, status=status.HTTP_400_BAD_REQUEST)
