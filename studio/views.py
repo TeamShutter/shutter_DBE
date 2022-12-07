@@ -456,8 +456,8 @@ class StudioRecommendView(APIView):
             except:
                 return Response({'error': "failed to rearrange data"}, status=status.HTTP_400_BAD_REQUEST)
             return Response({'data': data}, status=status.HTTP_200_OK)
-        except:
-            return Response({'error' : 'error'}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'error' : 'error', 'detail': f'{e}'}, status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request):
         data=request.data
