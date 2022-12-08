@@ -13,22 +13,25 @@ def similarity(vec_1, vec_2):
 
 
 def studio_vectorize(studio_obj):
-    vector_size = 23
-    tag_length = 17
+    try:
+        vector_size = 23
+        tag_length = 17
 
-    photos = Photo.objects.filter(studio = studio_obj)
-    vector = np.zeros(shape = (vector_size,))
-    tag_num = 0
-    for photo in photos:
-        tags =photo.tags.all()
-        for tag in tags:
-            vector[tag.id-1] += 1
-            tag_num += 1
-        vector[photo.color + tag_length] += 1/len(photos)
-    for i in range(18):
-        vector[i] = vector[i]/tag_num
-
-    return np.array(vector)
+        photos = Photo.objects.filter(studio = studio_obj)
+        vector = np.zeros(shape = (vector_size,))
+        tag_num = 0
+        for photo in photos:
+            tags =photo.tags.all()
+            for tag in tags:
+                vector[tag.id-1] += 1
+                tag_num += 1
+            vector[photo.color + tag_length] += 1/len(photos)
+        for i in range(18):
+            vector[i] = vector[i]/tag_num
+            print(vector[i])
+        return np.array(vector)
+    except Exception as e:
+        return print(str(e))
         
     
     
