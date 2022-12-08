@@ -15,6 +15,9 @@ from photo.serializers import PhotoSerializer
 from studio.models import Follow,Studio
 from studio.serializers import StudioSerializer
 
+from reservation.models import Reservation
+from reservation.serializers import ReservationSerializer
+
 class SignUpView(generics.GenericAPIView):
     authentication_classes = []
     serializer_class = SignUpSerializer
@@ -77,11 +80,13 @@ class LoadUserView(APIView):
             like = Like.objects.filter(user=user)
             follow_studio = Studio.objects.filter(follow__in=follow)
             like_photo = Photo.objects.filter(like__in=like)
+            reservation = Reservation.objects.filter(user=user)
             studio_serializer = StudioSerializer(follow_studio, many=True)
             photo_serializer = PhotoSerializer(like_photo, many=True)
             user_serializer = UserSerializer(user)
+            reservation_serializer = ReservationSerializer(reservation, many=True)
             return Response(
-                {'user_profile': user_serializer.data, 'photo': photo_serializer.data, 'studio': studio_serializer.data},
+                {'user_profile': user_serializer.data, 'photo': photo_serializer.data, 'studio': studio_serializer.data, 'reservation' : reservation_serializer.data},
                 status=status.HTTP_200_OK
             )
 
