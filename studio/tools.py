@@ -26,9 +26,10 @@ def studio_vectorize(studio_obj):
                 vector[tag.id-1] += 1
                 tag_num += 1
             vector[photo.color + tag_length] += 1/len(photos)
+            print(photo.color)
+        print(vector)
         for i in range(18):
             vector[i] = vector[i]/tag_num
-            print(vector[i])
         return np.array(vector)
     except Exception as e:
         return print(str(e))
