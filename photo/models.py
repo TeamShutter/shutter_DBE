@@ -7,7 +7,7 @@ from studio.models import Studio
 class Photo(models.Model):
     SEX = (('male', 'male'), ('female', 'female'))
     COLOR = ((1, '봄 웜톤'),(2,'여름 쿨톤'),(3,'가을 웜톤'), (4, '겨울 쿨톤'), (5, '흑백'))
-
+    TYPE = ((1,"프로필 사진"), (2, "증명 사진"), (3, "단체 사진"), (4, "컨셉 사진"))
 
     sex = models.CharField(max_length = 20, choices = SEX)
     # category = models.CharField(max_length=50, default='category')
@@ -17,7 +17,7 @@ class Photo(models.Model):
     like_users = models.ManyToManyField(User, blank=True, related_name='like_photos', through='Like')
     price = models.IntegerField(blank=True, null=True, default=0)
     color = models.IntegerField(choices=COLOR, blank=True, null=True, default=1)
-
+    type = models.IntegerField(choices=TYPE, blank=True, null=True, default=1)
     def __str__(self):
         return(f"{self.studio.name}'s photo_{self.id}")
 

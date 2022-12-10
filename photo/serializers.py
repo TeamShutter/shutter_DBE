@@ -7,7 +7,7 @@ class PhotoSerializer(serializers.ModelSerializer):
     studio = StudioSerializer(read_only=True)
     class Meta:
         model = Photo
-        fields = ('id', 'sex', 'photo_url', 'price', 'studio', 'like_users')
+        fields = "__all__"
 
 # class PhotoByStudioSerializer(serializers.ModelSerializer):
 #     class Meta:
