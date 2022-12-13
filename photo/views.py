@@ -40,6 +40,8 @@ class AllPhotoView(APIView):
                     photo = photo.filter(price__gte = request.GET.get('min_price'))
                 if request.GET.get('color') and request.GET.get('color') != "0":
                     photo = photo.filter(color = request.GET.get('color'))
+                if request.GET.get('photoType') and request.GET.get('photoType') != "0":
+                    photo = photo.filter(type= request.GET.get('photoType'))
             serializer = PhotoSerializer(photo, many=True)        
             return Response({"data" : serializer.data, "success": "get all photos"}, status=status.HTTP_200_OK)
         except:
