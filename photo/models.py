@@ -6,14 +6,13 @@ from studio.models import Studio
 # Create your models here.
 class Photo(models.Model):
     SEX = (('male', 'male'), ('female', 'female'))
-    COLOR = ((1, '봄 웜톤'),(2,'여름 쿨톤'),(3,'가을 웜톤'), (4, '겨울 쿨톤'), (5, '흑백'))
-    TYPE = ((1,"프로필 사진"), (2, "증명 사진"), (3, "단체 사진"), (4, "컨셉 사진"))
-
+    TYPE = ((1, '프로필 사진'),(2,'중명 사진'),(3,'단체 사진'), (4, '컨셉 사진'))
+    COLOR = ((1, "white"),(2, "gray"),(3, "black"),(4, "pink"),(5, "red"),(6, "wheat"),(7, "orange"),(8, "yellow"),(9, "greenyellow"),(10, "olive"),(11, "skyblue"),(12, "navy"),(13, "saddlebrown"),(14, "purple"))
     sex = models.CharField(max_length = 20, choices = SEX)
     # category = models.CharField(max_length=50, default='category')
     photo_url = models.CharField(max_length=500, default="url")
     studio = models.ForeignKey(Studio, null = True, on_delete=models.CASCADE)
-    #address 는 외래키, 태그는 다대다(하나의 사진에서 여러개의 태그를 등록할 수 있도록)
+    #address 는 외래키, 태그는 다대다(하나의 사진에서 여러개의 태그를 등록할ㅇ 수 있도록)
     like_users = models.ManyToManyField(User, blank=True, related_name='like_photos', through='Like')
     price = models.IntegerField(blank=True, null=True, default=0)
     color = models.IntegerField(choices=COLOR, blank=True, null=True, default=1)
