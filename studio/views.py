@@ -401,7 +401,7 @@ class StudioRecommendView(APIView):
             try:
                 print("a")
                 mood_list = request.GET.getlist('tags')
-                type_list = request.GET.get('photo_types')
+                type_list = request.GET.getlist('photo_types')
                 color_list = request.GET.getlist('colors')
                 town_list = request.GET.getlist('towns')
             except:
