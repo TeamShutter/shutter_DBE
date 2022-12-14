@@ -397,7 +397,6 @@ class StudioRecommendView(APIView):
     authentication_classes=[JWTAuthenticationSafe]
     def get(self, request):
         try:
-            print('a')
             try:
                 mood_list = request.GET.getlist('tags')
                 # product_list = request.GET.get('product')
@@ -405,10 +404,9 @@ class StudioRecommendView(APIView):
                 town_list = request.GET.getlist('towns')
             except:
                 return Response({"error":"input error"}, status=status.HTTP_400_BAD_REQUEST)
-            print('b')
             try:
                 tags = Tag.objects.filter(name__in = mood_list)
-                choice_vector = np.zeros(shape=(23,))
+                choice_vector = np.zeros(shape=(32,))
                 for tag in tags:
                     choice_vector[tag.id-1] = 1
                 for color in color_list:
@@ -416,30 +414,23 @@ class StudioRecommendView(APIView):
                 for i in range(23):
                     if choice_vector[i] == 0:
                         choice_vector[i] = -1
-                print('c')
             except:
                 return Response({"error":"choice vector"}, status=status.HTTP_400_BAD_REQUEST)
             try:
                 studios = Studio.objects.all()
                 studios = studios.filter(town__in = town_list)
-                print('k')
-                print(studios)
             except:
                 return Response({"error": "failed to filter studios"}, status=status.HTTP_400_BAD_REQUEST)
             if len(studios) == 0:
                 return Response({'result':'no matching studio'}, status=status.HTTP_200_OK)
-            print('j')
             sims = []
-            print('d')
             for studio in studios:
-                if not studio.vector :
-                    print('i')
+                if not studio.vector or len(list(studio.vector)) == 23:
                     studio_vector = studio_vectorize(studio)
                     studio.update_vector(list(studio_vector))
                 else:
                     studio_vector = np.array(studio.vector)
                 sims.append({"name" : studio.name, "sim" : similarity(studio_vector, choice_vector)})
-            print('e')
             try:
                 sims = sorted(sims, key=lambda x:x['sim'], reverse=True)
                 recommendation = [s['name'] for s in sims]
