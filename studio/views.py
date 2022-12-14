@@ -397,14 +397,18 @@ class StudioRecommendView(APIView):
     authentication_classes=[JWTAuthenticationSafe]
     def get(self, request):
         try:
+            print("q")
             try:
+                print("a")
                 mood_list = request.GET.getlist('tags')
                 type_list = request.GET.get('photo_types')
                 color_list = request.GET.getlist('colors')
                 town_list = request.GET.getlist('towns')
             except:
+                print("A")
                 return Response({"error":"input error"}, status=status.HTTP_400_BAD_REQUEST)
             try:
+                print("b")
                 tags = Tag.objects.filter(name__in = mood_list)
                 choice_vector = np.zeros(shape=(36,))
                 for tag in tags:
@@ -417,11 +421,14 @@ class StudioRecommendView(APIView):
                     if choice_vector[i] == 0:
                         choice_vector[i] = -1
             except:
+                print("B")
                 return Response({"error":"choice vector"}, status=status.HTTP_400_BAD_REQUEST)
             try:
+                print("c")
                 studios = Studio.objects.all()
                 studios = studios.filter(town__in = town_list)
             except:
+                print("C")
                 return Response({"error": "failed to filter studios"}, status=status.HTTP_400_BAD_REQUEST)
             if len(studios) == 0:
                 return Response({'result':'no matching studio'}, status=status.HTTP_200_OK)
@@ -434,22 +441,27 @@ class StudioRecommendView(APIView):
                     studio_vector = np.array(studio.vector)
                 sims.append({"name" : studio.name, "sim" : similarity(studio_vector, choice_vector)})
             try:
+                print("d")
                 sims = sorted(sims, key=lambda x:x['sim'], reverse=True)
                 recommendation = [s['name'] for s in sims]
                 recommended_studios = Studio.objects.filter(name__in = recommendation)
                 serializer = StudioSerializer(recommended_studios, many=True)
             except Exception as e:
+                print("D")
                 return Response({"error": "failed to sort studio."}, status=status.HTTP_400_BAD_REQUEST)
             try:
+                print("e")
                 data =[]
                 for sim in sims:
                     for studio in serializer.data:
                         if sim['name'] == studio['name']:
                             data.append(studio) 
             except:
+                print("E")
                 return Response({'error': "failed to rearrange data"}, status=status.HTTP_400_BAD_REQUEST)
             return Response({'data': data}, status=status.HTTP_200_OK)
         except Exception as e:
+            print("Q")
             return Response({'error' : 'error', 'detail': f'{e}'}, status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request):
