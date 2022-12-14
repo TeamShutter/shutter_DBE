@@ -14,8 +14,9 @@ def similarity(vec_1, vec_2):
 
 def studio_vectorize(studio_obj):
     try:
-        vector_size = 32
+        vector_size = 36
         tag_length = 17
+        tag_color_length = 31
 
         photos = Photo.objects.filter(studio = studio_obj)
         vector = np.zeros(shape = (vector_size,))
@@ -26,8 +27,8 @@ def studio_vectorize(studio_obj):
                 vector[tag.id-1] += 1
                 tag_num += 1
             vector[photo.color + tag_length] += 1/len(photos)
-            print(photo.color)
-        print(vector)
+            vector[photo.type + tag_color_length] += 1/len(photos)
+
         for i in range(18):
             vector[i] = vector[i]/tag_num
         return np.array(vector)
