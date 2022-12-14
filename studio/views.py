@@ -436,6 +436,7 @@ class StudioRecommendView(APIView):
             for studio in studios:
                 if (not studio.vector) or (len(list(studio.vector)) == 23):
                     studio_vector = studio_vectorize(studio)
+                    print(studio_vector)
                     studio.update_vector(list(studio_vector))
                 else:
                     studio_vector = np.array(studio.vector)
