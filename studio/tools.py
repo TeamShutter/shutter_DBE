@@ -14,7 +14,7 @@ def similarity(vec_1, vec_2):
 
 def studio_vectorize(studio_obj):
     try:
-        vector_size = 23
+        vector_size = 32
         tag_length = 17
 
         photos = Photo.objects.filter(studio = studio_obj)
